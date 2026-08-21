@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TisaWasteManagement.Data;
 using TisaWasteManagement.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Disable file watching in production (fixes inotify limit on Render)
+// ⚠️ CRITICAL FIX: Disable file watching in production
 builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                      .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false);
 
@@ -12,11 +12,11 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnCh
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite("Data Source=waste_management.db"));
 
-// ===== STEP 1: Enable Session =====
+// Enable Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
-// ===== Report Generation module: register the PDF/Excel report service =====
+// Report Generation module
 builder.Services.AddScoped<IReportGenerator, ReportGenerator>();
 
 // Add services to the container.
@@ -38,14 +38,10 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-// ===== STEP 1: Add Session Middleware =====
 app.UseSession();
-
 app.UseAuthorization();
-
 app.MapStaticAssets();
 
-// ===== STEP 1: Default route = Home/Index (Landing Page) =====
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
