@@ -1,0 +1,177 @@
+﻿@model TisaWasteManagement.Models.Complaint
+
+@{
+    ViewData["Title"] = "Complaint Status";
+    Layout = "_PublicLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ComplaintStyles.css" />
+}
+
+<div class="resident-complaint-page">
+    <div class="resident-complaint-container status-container">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="complaint-public-header">
+            <h1>
+                <i class="bi bi-info-circle"></i> Complaint Status
+            </h1>
+            <p>
+                View the current status and details of your complaint.
+            </p>
+        </div>
+
+        <!-- ===== STATUS CARD ===== -->
+        <div class="complaint-form-card status-card">
+
+            <!-- ===== CURRENT STATUS ===== -->
+            <div class="status-banner">
+                <div class="status-display">
+                    <span class="status-badge @(Model.Status switch
+                          {
+                              "Accomplished" => "status-accomplished",
+                              "Ongoing" => "status-ongoing",
+                              "Awaiting Review" => "status-awaiting",
+                              _ => "status-pending"
+                          })">
+                        @Model.StatusDisplayName
+                    </span>
+                </div>
+                <p class="status-updated">
+                    Last updated: @(Model.UpdatedDate?.ToString("MMMM dd, yyyy hh:mm tt") ?? Model.FiledDate.ToString("MMMM dd, yyyy hh:mm tt"))
+                </p>
+            </div>
+
+            <!-- ===== TIMELINE ===== -->
+            <div class="timeline-card">
+                <div class="timeline-card-header">
+                    <i class="bi bi-clock-history"></i> Status Timeline
+                </div>
+                <div class="timeline-card-body">
+                    <!-- Step 1: Complaint Filed -->
+                    <div class="timeline-item completed">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <span class="timeline-status">Complaint Filed</span>
+                            <span class="timeline-date">@Model.FiledDate.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Ongoing -->
+                    @if (Model.Status == "Ongoing" || Model.Status == "Accomplished")
+                    {
+                        <div class="timeline-item @(Model.Status == "Ongoing" ? "active" : "completed")">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <span class="timeline-status">Ongoing</span>
+                                <span class="timeline-date">Being addressed by our team</span>
+                                @if (Model.Status == "Ongoing" && Model.UpdatedDate.HasValue)
+                                {
+                                    <span class="timeline-date">Updated: @Model.UpdatedDate.Value.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Step 3: Accomplished -->
+                    @if (Model.Status == "Accomplished")
+                    {
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <span class="timeline-status">Accomplished</span>
+                                <span class="timeline-date">Complaint resolved successfully!</span>
+                                @if (Model.UpdatedDate.HasValue)
+                                {
+                                    <span class="timeline-date">Resolved: @Model.UpdatedDate.Value.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ===== COMPLAINT DETAILS ===== -->
+            <div class="details-card">
+                <div class="details-card-header">
+                    <i class="bi bi-file-text"></i> Complaint Details
+                </div>
+                <div class="details-card-body">
+                    <div class="detail-row">
+                        <span class="detail-label">Ticket Number</span>
+                        <span class="detail-value">
+                            <span class="ticket-number">@Model.TicketNumber</span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Resident Name</span>
+                        <span class="detail-value">@Model.ResidentName</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact Number</span>
+                        <span class="detail-value">@Model.ContactNumber</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Sitio</span>
+                        <span class="detail-value">@(Model.Sitio?.SitioName ?? "N/A")</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Complaint Type</span>
+                        <span class="detail-value">@Model.ComplaintType</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Details))
+                    {
+                        <div class="detail-row">
+                            <span class="detail-label">Details</span>
+                            <span class="detail-value detail-text">@Model.Details</span>
+                        </div>
+                    }
+                    @if (Model.HasImage)
+                    {
+                        <div class="detail-row">
+                            <span class="detail-label">Attached Photo</span>
+                            <span class="detail-value">
+                                <button type="button" class="btn btn-preview-image" data-bs-toggle="modal" data-bs-target="#imagePreviewModal">
+                                    <i class="bi bi-eye"></i> Preview Image
+                                </button>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ===== ACTIONS ===== -->
+            <div class="status-actions">
+                <a asp-action="Track" class="btn btn-track-complaint">
+                    <i class="bi bi-search"></i> Track Another
+                </a>
+                <a asp-action="Index" class="btn btn-submit">
+                    <i class="bi bi-plus-circle"></i> File New Complaint
+                </a>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-cancel-action">
+                    <i class="bi bi-house"></i> Home
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== IMAGE MODAL ===== -->
+@if (Model.HasImage)
+{
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagePreviewModalLabel">Attached Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="@Model.ImageUrl" alt="Complaint photo" class="img-fluid rounded" />
+                </div>
+            </div>
+        </div>
+    </div>
+}

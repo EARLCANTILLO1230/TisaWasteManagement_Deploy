@@ -1,0 +1,621 @@
+﻿@using TisaWasteManagement.Models
+
+@{
+    ViewData["Title"] = "Home";
+    Layout = "_PublicLayout";
+
+    var announcements =
+        ViewBag.Announcements as List<Announcement>
+        ?? new List<Announcement>();
+
+    var bulletinBoardImages =
+        ViewBag.BulletinBoardImages as List<BulletinBoardImage>
+        ?? new List<BulletinBoardImage>();
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/HomeStyles.css" />
+}
+
+<!-- =========================================================
+     HERO
+     ========================================================= -->
+
+<section class="resident-hero">
+
+    <div class="container">
+
+        <div class="hero-layout">
+
+            <!-- LEFT -->
+            <div class="hero-information">
+
+                <div class="government-label">
+                    <span>REPUBLIC OF THE PHILIPPINES</span>
+                    <strong>CITY OF CEBU • BARANGAY TISA</strong>
+                </div>
+
+
+                <h1>
+                    A Cleaner Barangay
+                    <span>Starts With Us.</span>
+                </h1>
+
+
+                <p class="hero-description">
+                    Access garbage collection schedules, report waste-related
+                    concerns, and stay updated with Barangay Tisa's latest
+                    announcements.
+                </p>
+
+
+                <div class="hero-actions">
+
+                    <a class="hero-primary-button"
+                       asp-controller="CollectionSchedule"
+                       asp-action="PublicIndex">
+
+                        <i class="bi bi-calendar-check"></i>
+
+                        Check Collection Schedule
+
+                    </a>
+
+
+                    <a class="hero-secondary-button"
+                       asp-controller="Complaint"
+                       asp-action="Index">
+
+                        <i class="bi bi-exclamation-triangle"></i>
+
+                        Report a Concern
+
+                    </a>
+
+                </div>
+
+
+                <div class="hero-note">
+
+                    <i class="bi bi-info-circle"></i>
+
+                    <span>
+                        Keep your surroundings clean. Follow proper waste
+                        segregation and collection schedules.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT -->
+            <div class="hero-logo-area">
+
+                <div class="logo-circle">
+
+                    <img src="~/images/TISA_LOGO-removebg-preview.png"
+                         alt="Barangay Tisa Official Logo" />
+
+                </div>
+
+
+                <div class="logo-caption">
+
+                    <strong>Barangay Tisa</strong>
+
+                    <span>
+                        Cebu City
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     RESIDENT SERVICES
+     ========================================================= -->
+
+<section class="resident-services">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    RESIDENT SERVICES
+                </span>
+
+                <h2>
+                    How can we help you?
+                </h2>
+
+            </div>
+
+            <p>
+                Quickly access the services you need.
+            </p>
+
+        </div>
+
+
+        <div class="services-grid">
+
+
+            <!-- Collection -->
+            <a class="resident-service-card"
+               asp-controller="CollectionSchedule"
+               asp-action="PublicIndex">
+
+                <div class="service-icon green">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+
+                <div class="service-content">
+
+                    <h3>
+                        Collection Schedule
+                    </h3>
+
+                    <p>
+                        Find out when garbage collection is scheduled
+                        in your area.
+                    </p>
+
+                    <span class="service-link">
+                        View Schedule
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <!-- Complaint -->
+            <a class="resident-service-card"
+               asp-controller="Complaint"
+               asp-action="Index">
+
+                <div class="service-icon yellow">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+
+                <div class="service-content">
+
+                    <h3>
+                        File a Complaint
+                    </h3>
+
+                    <p>
+                        Report missed collections, improper waste
+                        disposal, or other concerns.
+                    </p>
+
+                    <span class="service-link">
+                        Submit Report
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <!-- Track -->
+            <a class="resident-service-card"
+               asp-controller="Complaint"
+               asp-action="Track">
+
+                <div class="service-icon blue">
+                    <i class="bi bi-search"></i>
+                </div>
+
+                <div class="service-content">
+
+                    <h3>
+                        Track Complaint
+                    </h3>
+
+                    <p>
+                        Check the current status of a complaint
+                        using your reference code.
+                    </p>
+
+                    <span class="service-link">
+                        Track Status
+                        <i class="bi bi-arrow-right"></i>
+                    </span>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     ANNOUNCEMENTS - FULL CONTENT VISIBLE
+     ========================================================= -->
+
+<section class="resident-announcements">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    STAY INFORMED
+                </span>
+
+                <h2>
+                    Latest Announcements
+                </h2>
+
+            </div>
+
+            <p>
+                Important updates from Barangay Tisa.
+            </p>
+
+        </div>
+
+
+        @if (!announcements.Any())
+        {
+
+            <div class="resident-empty">
+
+                <i class="bi bi-megaphone"></i>
+
+                <h3>
+                    No announcements yet
+                </h3>
+
+                <p>
+                    Please check back later for barangay updates.
+                </p>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="announcement-grid">
+
+                @foreach (var item in announcements)
+                {
+
+                    var isNew =
+                    (DateTime.Now - item.DatePosted).TotalDays <= 7;
+
+
+                    <article class="resident-announcement-card">
+
+
+                        @if (!string.IsNullOrEmpty(item.ImageFileName))
+                        {
+
+                            <div class="announcement-photo">
+
+                                <img src="~/images/announcements/@item.ImageFileName"
+                                     alt="@item.Title"
+                                     loading="lazy" />
+
+                                @if (isNew)
+                                {
+                                    <span class="new-label">
+                                        NEW
+                                    </span>
+                                }
+
+                            </div>
+
+                        }
+                        else
+                        {
+
+                            <div class="announcement-placeholder">
+
+                                <i class="bi bi-megaphone"></i>
+
+                            </div>
+
+                        }
+
+
+                        <div class="announcement-content">
+
+                            <span class="announcement-date">
+                                <i class="bi bi-calendar3"></i>
+                                @item.DatePosted.ToString("MMM dd, yyyy")
+                            </span>
+
+
+                            <h3>
+                                @item.Title
+                            </h3>
+
+
+                            <!-- FULL CONTENT - NO CUT OFF -->
+                            <p class="announcement-full-text">
+                                @item.Content
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                }
+
+            </div>
+
+        }
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     BULLETIN BOARD - NATURAL HEIGHT
+     ========================================================= -->
+
+<section class="resident-bulletin">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    COMMUNITY INFORMATION
+                </span>
+
+                <h2>
+                    Waste Management Guide
+                </h2>
+
+            </div>
+
+            <p>
+                Helpful materials for a cleaner and healthier community.
+            </p>
+
+        </div>
+
+
+        @if (!bulletinBoardImages.Any())
+        {
+
+            <div class="resident-empty">
+
+                <i class="bi bi-images"></i>
+
+                <h3>
+                    No materials available
+                </h3>
+
+                <p>
+                    Educational materials will appear here soon.
+                </p>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="bulletin-grid-resident">
+
+                @foreach (var pic in bulletinBoardImages)
+                {
+
+                    var captionText =
+                    !string.IsNullOrEmpty(pic.Caption)
+                    ? pic.Caption
+                    : "Barangay Tisa Waste Management Guide";
+
+
+                    <div class="resident-bulletin-card"
+                         tabindex="0"
+                         role="button"
+                         data-bs-toggle="modal"
+                         data-bs-target="#imageModal"
+                         data-image="@Url.Content($"~/images/bulletinboard/{pic.ImageFileName}")"
+                         data-caption="@captionText">
+
+
+                        <div class="bulletin-photo">
+
+                            <img src="~/images/bulletinboard/@pic.ImageFileName"
+                                 alt="@captionText"
+                                 loading="lazy" />
+
+
+                            <div class="bulletin-hover">
+
+                                <div>
+
+                                    <i class="bi bi-arrows-fullscreen"></i>
+
+                                    <span>
+                                        View Guide
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        @if (!string.IsNullOrEmpty(pic.Caption))
+                        {
+
+                            <div class="bulletin-caption">
+
+                                <span>
+                                    @pic.Caption
+                                </span>
+
+                                <i class="bi bi-arrow-up-right"></i>
+
+                            </div>
+
+                        }
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     IMAGE MODAL
+     ========================================================= -->
+
+<div class="modal fade"
+     id="imageModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+
+        <div class="modal-content resident-image-modal">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title"
+                    id="imageModalLabel">
+
+                    Waste Management Guide
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <img id="modalImage"
+                     src=""
+                     alt=""
+                     class="modal-guide-image" />
+
+                <p id="modalCaption"
+                   class="modal-guide-caption">
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const modal =
+                document.getElementById("imageModal");
+
+            const modalImage =
+                document.getElementById("modalImage");
+
+            const modalCaption =
+                document.getElementById("modalCaption");
+
+            const modalLabel =
+                document.getElementById("imageModalLabel");
+
+
+            document.querySelectorAll(
+                ".resident-bulletin-card"
+            ).forEach(function (card) {
+
+                card.addEventListener("click", function () {
+
+                    const image =
+                        this.getAttribute("data-image");
+
+                    const caption =
+                        this.getAttribute("data-caption");
+
+
+                    modalImage.src = image;
+
+                    modalImage.alt =
+                        caption || "Waste Management Guide";
+
+                    modalCaption.textContent =
+                        caption || "";
+
+                    modalLabel.textContent =
+                        caption || "Waste Management Guide";
+
+                });
+
+            });
+
+
+            if (modal) {
+
+                modal.addEventListener(
+                    "hidden.bs.modal",
+                    function () {
+
+                        modalImage.src = "";
+
+                        modalCaption.textContent = "";
+
+                    }
+                );
+
+            }
+
+        });
+
+    </script>
+
+}

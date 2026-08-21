@@ -1,0 +1,48 @@
+@model TisaWasteManagement.Models.Sitio
+
+@{
+    ViewData["Title"] = "Sitio Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/SitioStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Sitio Details</h1>
+            <p class="page-subtitle">View sitio information</p>
+        </div>
+        <div class="page-actions">
+            <a asp-action="Edit" asp-route-id="@Model?.SitioId" class="btn-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-geo-alt"></i> Sitio Information</h4>
+        </div>
+        <div class="module-card-body">
+            <dl class="detail-list">
+                <div class="detail-row">
+                    <dt class="detail-label">Sitio Name</dt>
+                    <dd class="detail-value">@Html.DisplayFor(model => model.SitioName)</dd>
+                </div>
+            </dl>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <a asp-action="Index" class="btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>

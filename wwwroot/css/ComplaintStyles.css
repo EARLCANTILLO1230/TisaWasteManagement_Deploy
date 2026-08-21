@@ -1,0 +1,986 @@
+﻿/* ==========================================================================
+   Resident Complaint - Complete Styles
+   Government-style design with Green (#1B5E20) and Gold (#F9A825)
+   ========================================================================== */
+
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+
+.resident-complaint-page {
+    background: #f8fafc;
+    padding: 40px 0 60px;
+    min-height: 70vh;
+}
+
+.resident-complaint-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
+.complaint-public-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 35px;
+}
+
+.complaint-public-label {
+    display: inline-block;
+    color: #1b5e20;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.complaint-public-header h1 {
+    margin: 0 0 12px;
+    color: #142018;
+    font-size: 2rem;
+    font-weight: 750;
+    line-height: 1.25;
+}
+
+    .complaint-public-header h1 i {
+        color: #f9a825;
+        margin-right: 8px;
+    }
+
+    .complaint-public-header h1 .text-success {
+        color: #1b5e20 !important;
+    }
+
+.complaint-public-header p {
+    margin: 0 auto;
+    max-width: 580px;
+    color: #64748b;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* ============================================================
+   FORM CARD
+   ============================================================ */
+
+.complaint-form-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+/* ============================================================
+   ALERT MESSAGES
+   ============================================================ */
+
+.alert-danger-custom {
+    background: #fce4ec;
+    border-left: 4px solid #c62828;
+    color: #c62828;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+}
+
+    .alert-danger-custom i {
+        color: #c62828;
+        margin-right: 0.5rem;
+    }
+
+    .alert-danger-custom .btn-close {
+        padding: 0.5rem;
+    }
+
+/* ============================================================
+   FORM GRID
+   ============================================================ */
+
+.complaint-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.complaint-form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* ============================================================
+   FORM GROUPS
+   ============================================================ */
+
+.complaint-form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.complaint-form-label {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+    .complaint-form-label .text-danger {
+        color: #c62828;
+    }
+
+    .complaint-form-label .text-muted {
+        color: #94a3b8;
+        font-weight: 400;
+    }
+
+.complaint-form-control {
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    color: #1e293b;
+    width: 100%;
+}
+
+    .complaint-form-control:focus {
+        border-color: #1b5e20;
+        box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.08);
+        outline: none;
+        background: #fff;
+    }
+
+    .complaint-form-control::placeholder {
+        color: #94a3b8;
+    }
+
+.complaint-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.text-danger {
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+/* ============================================================
+   IMAGE UPLOAD
+   ============================================================ */
+
+.image-upload-group {
+    margin-bottom: 1.25rem;
+}
+
+.image-upload-wrapper {
+    position: relative;
+}
+
+.file-input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.file-input-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+    .file-input-label:hover {
+        border-color: #1b5e20;
+        background: #f1f8f1;
+    }
+
+    .file-input-label i {
+        font-size: 2rem;
+        color: #1b5e20;
+        margin-bottom: 0.25rem;
+    }
+
+    .file-input-label span {
+        font-weight: 500;
+        color: #1e293b;
+    }
+
+    .file-input-label small {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        margin-top: 0.15rem;
+    }
+
+.image-preview-wrapper {
+    position: relative;
+    margin-top: 0.75rem;
+    display: inline-block;
+}
+
+    .image-preview-wrapper img {
+        max-height: 180px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+.remove-image-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #c62828;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+    .remove-image-btn:hover {
+        background: #b71c1c;
+        transform: scale(1.1);
+    }
+
+.form-hint {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 0.3rem;
+}
+
+    .form-hint i {
+        margin-right: 0.25rem;
+        color: #1b5e20;
+    }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn i {
+        font-size: 1rem;
+    }
+
+.btn-submit {
+    background: #1b5e20;
+    color: #fff;
+}
+
+    .btn-submit:hover {
+        background: #2e7d32;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3);
+    }
+
+.btn-track {
+    background: #f8fafc;
+    color: #1b5e20;
+    border: 1px solid #1b5e20;
+}
+
+    .btn-track:hover {
+        background: #f1f8f1;
+        color: #1b5e20;
+        transform: translateY(-2px);
+    }
+
+.btn-cancel-action {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+}
+
+    .btn-cancel-action:hover {
+        background: #e9ecef;
+        color: #495057;
+        transform: translateY(-2px);
+    }
+
+.btn-preview-image {
+    background: #e3f2fd;
+    color: #0d47a1;
+    border: 1px solid #bbdefb;
+    border-radius: 6px;
+    padding: 0.3rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+    .btn-preview-image:hover {
+        background: #bbdefb;
+        color: #0d47a1;
+    }
+
+.btn-track-complaint {
+    background: #f8fafc;
+    color: #1b5e20;
+    border: 1px solid #1b5e20;
+}
+
+    .btn-track-complaint:hover {
+        background: #f1f8f1;
+        color: #1b5e20;
+        transform: translateY(-2px);
+    }
+
+.complaint-form-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+    margin-top: 0.5rem;
+}
+
+/* ============================================================
+   TRACK VIEW
+   ============================================================ */
+
+.track-container {
+    max-width: 700px;
+}
+
+.track-card {
+    padding: 2rem;
+}
+
+.track-form-group {
+    margin-bottom: 0.75rem;
+}
+
+.track-input-wrapper {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.track-input {
+    flex: 1;
+}
+
+.btn-track-submit {
+    background: #1b5e20;
+    color: #fff;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+    .btn-track-submit:hover {
+        background: #2e7d32;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3);
+    }
+
+.track-actions {
+    margin-top: 0.5rem;
+}
+
+.track-help-card {
+    margin-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: #f1f8f1;
+    border-radius: 10px;
+    border: 1px solid #d9e6da;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.track-help-icon {
+    font-size: 1.5rem;
+    color: #1b5e20;
+    flex-shrink: 0;
+}
+
+.track-help-content h5 {
+    color: #1e293b;
+    font-size: 0.95rem;
+    margin: 0 0 0.2rem 0;
+}
+
+.track-help-content p {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.track-help-content a {
+    color: #1b5e20;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+    .track-help-content a:hover {
+        color: #124717;
+    }
+
+/* ============================================================
+   STATUS / TRACK RESULT VIEW
+   ============================================================ */
+
+.status-container {
+    max-width: 800px;
+}
+
+.status-card {
+    padding: 2rem;
+}
+
+.status-banner {
+    text-align: center;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1.25rem;
+}
+
+.status-display {
+    margin-bottom: 0.3rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.status-awaiting {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-ongoing {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.status-accomplished {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.status-pending {
+    background: #f5f5f5;
+    color: #616161;
+}
+
+.status-updated {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* Timeline */
+.timeline-card {
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.timeline-card-header {
+    background: #fff;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    color: #1b5e20;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .timeline-card-header i {
+        color: #f9a825;
+    }
+
+.timeline-card-body {
+    padding: 1.25rem;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.timeline-marker {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border-radius: 50%;
+    background: #dee2e6;
+    margin-top: 3px;
+    border: 2px solid #dee2e6;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: #1b5e20;
+    border-color: #1b5e20;
+}
+
+.timeline-item.active .timeline-marker {
+    background: #f9a825;
+    border-color: #f9a825;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.timeline-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.timeline-status {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+/* Details */
+.details-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.details-card-header {
+    background: #f8f9fa;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    color: #1b5e20;
+    border-bottom: 2px solid #1b5e20;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .details-card-header i {
+        color: #f9a825;
+    }
+
+.details-card-body {
+    padding: 1.25rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+.detail-label {
+    font-weight: 500;
+    color: #495057;
+    min-width: 130px;
+}
+
+.detail-value {
+    text-align: right;
+    color: #212529;
+}
+
+.detail-text {
+    text-align: right;
+    word-break: break-word;
+    max-width: 300px;
+}
+
+.ticket-number {
+    font-weight: 700;
+    color: #1b5e20;
+}
+
+.status-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+}
+
+/* ============================================================
+   CONFIRMATION / SUBMITTED VIEW
+   ============================================================ */
+
+.submitted-container {
+    max-width: 800px;
+}
+
+.submitted-card {
+    padding: 2rem;
+}
+
+.submitted-success-banner {
+    text-align: center;
+    padding: 1.5rem;
+    background: #e8f5e9;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+    .submitted-success-banner i {
+        font-size: 3rem;
+        color: #1b5e20;
+    }
+
+    .submitted-success-banner h4 {
+        color: #1b5e20;
+        margin: 0.5rem 0 0.25rem 0;
+    }
+
+    .submitted-success-banner p {
+        color: #2e7d32;
+        margin: 0;
+    }
+
+/* Ticket Card */
+.ticket-card {
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.ticket-card-header {
+    background: #1b5e20;
+    color: #fff;
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .ticket-card-header i {
+        color: #f9a825;
+    }
+
+.ticket-card-body {
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.ticket-number-display {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1b5e20;
+    letter-spacing: 1px;
+    word-break: break-all;
+}
+
+.ticket-hint {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0.3rem 0 0 0;
+}
+
+/* Summary Card */
+.summary-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.summary-card-header {
+    background: #f8f9fa;
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    color: #1b5e20;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .summary-card-header i {
+        color: #f9a825;
+    }
+
+.summary-card-body {
+    padding: 1rem 1.25rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+
+.summary-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.summary-value {
+    color: #1e293b;
+    text-align: right;
+}
+
+.summary-details {
+    text-align: right;
+    word-break: break-word;
+    max-width: 300px;
+}
+
+/* Next Steps */
+.next-steps-card {
+    background: #f1f8f1;
+    border-radius: 10px;
+    border: 1px solid #d9e6da;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+
+.next-steps-header {
+    background: #1b5e20;
+    color: #fff;
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .next-steps-header i {
+        color: #f9a825;
+    }
+
+.next-steps-body {
+    padding: 1rem 1.25rem;
+}
+
+    .next-steps-body ul {
+        margin: 0;
+        padding-left: 0;
+        list-style: none;
+    }
+
+        .next-steps-body ul li {
+            padding: 0.25rem 0;
+            color: #1e293b;
+            font-size: 0.9rem;
+        }
+
+            .next-steps-body ul li i {
+                color: #1b5e20;
+                margin-right: 0.5rem;
+            }
+
+.submitted-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (max-width: 992px) {
+    .complaint-form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .complaint-form-card {
+        padding: 1.5rem;
+    }
+
+    .resident-complaint-container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .complaint-public-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .complaint-form-card {
+        padding: 1rem;
+    }
+
+    .track-input-wrapper {
+        flex-direction: column;
+    }
+
+    .btn-track-submit {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .complaint-form-actions {
+        flex-direction: column;
+    }
+
+        .complaint-form-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+    .status-actions {
+        flex-direction: column;
+    }
+
+        .status-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+    .submitted-actions {
+        flex-direction: column;
+    }
+
+        .submitted-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+    }
+
+    .detail-value {
+        text-align: left;
+    }
+
+    .detail-text {
+        text-align: left;
+        max-width: 100%;
+    }
+
+    .summary-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+    }
+
+    .summary-value {
+        text-align: left;
+    }
+
+    .summary-details {
+        text-align: left;
+        max-width: 100%;
+    }
+
+    .track-help-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .status-card {
+        padding: 1rem;
+    }
+
+    .submitted-card {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .complaint-public-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .complaint-public-header p {
+        font-size: 0.85rem;
+    }
+
+    .ticket-number-display {
+        font-size: 1.2rem;
+    }
+
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 0.4rem 1.5rem;
+    }
+
+    .timeline-item {
+        gap: 0.5rem;
+    }
+
+    .timeline-marker {
+        width: 10px;
+        height: 10px;
+        min-width: 10px;
+    }
+}

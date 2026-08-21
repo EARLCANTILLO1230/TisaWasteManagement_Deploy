@@ -1,0 +1,91 @@
+@model TisaWasteManagement.Models.Announcement
+
+@{
+    ViewData["Title"] = "Edit Announcement";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AnnouncementandBulletinBoardStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <i class="bi bi-pencil-square"></i> Edit Announcement
+            </h1>
+            <p class="page-subtitle">Update announcement details</p>
+        </div>
+        <div class="page-actions">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== FORM ===== -->
+    <div class="module-card">
+        <div class="module-card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+                <input type="hidden" asp-for="AnnouncementId" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger-custom"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Title" class="form-label">
+                            Title <span class="required">*</span>
+                        </label>
+                        <input asp-for="Title" class="form-control" placeholder="Enter announcement title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Content" class="form-label">
+                        Content <span class="required">*</span>
+                    </label>
+                    <textarea asp-for="Content" class="form-control" rows="5" placeholder="Enter announcement content..."></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.ImageFileName))
+                {
+                    <div class="form-group">
+                        <label class="form-label">Current Picture</label>
+                        <div>
+                            <img src="~/images/announcements/@Model.ImageFileName" style="max-height:150px;" class="img-thumbnail" />
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label class="form-label">Replace Picture <span class="text-muted">(Optional)</span></label>
+                    <input type="file" name="imageFile" class="form-control" accept=".jpg,.jpeg,.png,.gif" />
+                    <div class="form-text">Only upload a file here if you want to replace the current picture. Accepted formats: JPG, PNG, GIF. Max size 5 MB.</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg"></i> Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

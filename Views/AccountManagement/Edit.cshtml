@@ -1,0 +1,76 @@
+@model TisaWasteManagement.Models.AccountEditViewModel
+
+@{
+    ViewData["Title"] = "Edit " + Model.Type + " Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AccountManagementStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Edit @Model.Type Account</h1>
+            <p class="page-subtitle">Update @Model.Type.ToString().ToLower() account information</p>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger-custom">
+            <i class="bi bi-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Form -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-person"></i> Edit Account</h4>
+        </div>
+        <div class="module-card-body">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Both hidden fields are needed so the controller knows
+                     WHICH account to update: Id alone isn't enough, since
+                     an AdminAccount and an InspectorAccount can have the
+                     same Id number (they're two separate tables). -->
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Type" />
+
+                <div asp-validation-summary="ModelOnly" class="alert-danger-custom" style="margin-bottom: 16px;"></div>
+
+                <div class="form-group">
+                    <label asp-for="Username" class="form-label">
+                        Username <span class="required">*</span>
+                    </label>
+                    <input asp-for="Username" class="form-control" placeholder="Enter username..." />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                    <span class="form-text">Choose a unique username for this @Model.Type.ToString().ToLower() account.</span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-check-lg"></i> Save
+                    </button>
+                    <a asp-action="Index" class="btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

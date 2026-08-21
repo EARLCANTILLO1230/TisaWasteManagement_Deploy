@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Track Complaint";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ComplaintStyles.css" />
+}
+
+<div class="resident-complaint-page">
+    <div class="resident-complaint-container track-container">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="complaint-public-header">
+            <h1>
+                <i class="bi bi-clipboard-check"></i> Track Your Complaint
+            </h1>
+            <p>
+                Enter your ticket number to check the current status of your complaint.
+            </p>
+        </div>
+
+        <!-- ===== TRACK FORM ===== -->
+        <div class="complaint-form-card track-card">
+            <form asp-action="Track" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <!-- ===== ALERT MESSAGES ===== -->
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <div class="track-form-group">
+                    <label for="ticketNumber" class="complaint-form-label">
+                        Ticket Number <span class="text-danger">*</span>
+                    </label>
+                    <div class="track-input-wrapper">
+                        <input type="text"
+                               name="ticketNumber"
+                               id="ticketNumber"
+                               class="complaint-form-control track-input"
+                               placeholder="e.g., TISA-20260718-0001"
+                               autofocus />
+                        <button type="submit" class="btn btn-track-submit">
+                            <i class="bi bi-search"></i> Track
+                        </button>
+                    </div>
+                    <div class="form-hint">
+                        <i class="bi bi-info-circle"></i> Enter the ticket number you received when you filed your complaint.
+                    </div>
+                </div>
+
+                <div class="track-actions">
+                    <a asp-action="Index" class="btn btn-submit">
+                        <i class="bi bi-plus-circle"></i> File a New Complaint
+                    </a>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- ===== HELP SECTION ===== -->
+        <div class="track-help-card">
+            <div class="track-help-icon">
+                <i class="bi bi-question-circle"></i>
+            </div>
+            <div class="track-help-content">
+                <h5>Don't have a ticket number?</h5>
+                <p>
+                    If you haven't filed a complaint yet, please
+                    <a asp-action="Index">click here to file a new complaint</a>.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>

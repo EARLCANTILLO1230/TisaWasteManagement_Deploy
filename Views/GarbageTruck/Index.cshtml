@@ -1,0 +1,125 @@
+@model IEnumerable<TisaWasteManagement.Models.GarbageTruck>
+
+@{
+    ViewData["Title"] = "Garbage Truck";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/GarbageTruckStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Garbage Truck</h1>
+            <p class="page-subtitle">Manage garbage trucks</p>
+        </div>
+        <div class="page-actions">
+            <a asp-action="Create" class="btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    @{
+        var success = TempData["SuccessMessage"] as string;
+    }
+    @if (!string.IsNullOrEmpty(success))
+    {
+        <div class="alert-success-custom">
+            <i class="bi bi-check-circle"></i>
+            @success
+        </div>
+    }
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search plate or MV number...">
+            <button class="btn-search" type="button" onclick="filterTable()">Search</button>
+        </div>
+        <span class="record-count">@Model.Count() records</span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <div class="table-scroll">
+            <table class="module-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Plate Number</th>
+                        <th>MV File Number</th>
+                        <th>Status</th>
+                        <th class="text-center" style="width: 100px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderBy(t => t.PlateNumber))
+                    {
+                        <tr>
+                            <td>
+                                <strong>@Html.DisplayFor(model => item.PlateNumber)</strong>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => item.MVFileNumber)
+                            </td>
+                            <td>
+                                @if (item.StatusFlag == "Active")
+                                {
+                                    <span class="badge-status badge-active">Active</span>
+                                }
+                                else if (item.StatusFlag == "Maintenance")
+                                {
+                                    <span class="badge-status badge-maintenance">Maintenance</span>
+                                }
+                                else if (item.StatusFlag == "Inactive")
+                                {
+                                    <span class="badge-status badge-inactive">Inactive</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-status">@Html.DisplayFor(model => item.StatusFlag)</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    <a asp-action="Edit" asp-route-id="@item.TruckId" class="btn-edit">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        function filterTable() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById('dataTable');
+            var rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(function(row) {
+                var text = row.textContent || row.innerText;
+                row.style.display = text.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterTable();
+            }
+        });
+    </script>
+}

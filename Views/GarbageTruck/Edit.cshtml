@@ -1,0 +1,95 @@
+@model TisaWasteManagement.Models.GarbageTruck
+
+@{
+    ViewData["Title"] = "Edit Garbage Truck";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/GarbageTruckStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Edit Garbage Truck</h1>
+            <p class="page-subtitle">Update truck information</p>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger-custom">
+            <i class="bi bi-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Form -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-truck"></i> Edit Truck Information</h4>
+        </div>
+        <div class="module-card-body">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="TruckId" />
+
+                <div asp-validation-summary="ModelOnly" class="alert-danger-custom" style="margin-bottom: 16px;"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="PlateNumber" class="form-label">
+                            Plate Number <span class="required">*</span>
+                        </label>
+                        <input asp-for="PlateNumber" class="form-control" placeholder="Enter plate number..." />
+                        <span asp-validation-for="PlateNumber" class="text-danger"></span>
+                        <span class="form-text">Example: ABC-1234</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="MVFileNumber" class="form-label">
+                            MV File Number <span class="required">*</span>
+                        </label>
+                        <input asp-for="MVFileNumber" class="form-control" placeholder="Enter MV file number..." />
+                        <span asp-validation-for="MVFileNumber" class="text-danger"></span>
+                        <span class="form-text">Motor Vehicle file number.</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="StatusFlag" class="form-label">
+                        Status <span class="required">*</span>
+                    </label>
+                    <select asp-for="StatusFlag" class="form-control">
+                        <option value="">-- Select Status --</option>
+                        <option value="Active">Active</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                    <span asp-validation-for="StatusFlag" class="text-danger"></span>
+                    <span class="form-text">Current operational status of the truck.</span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-check-lg"></i> Save
+                    </button>
+                    <a asp-action="Index" class="btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

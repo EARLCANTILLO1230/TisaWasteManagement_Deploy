@@ -1,0 +1,227 @@
+﻿@model TisaWasteManagement.Models.ResolveComplaintViewModel
+
+@{
+    ViewData["Title"] = "Resolve Complaint";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ComplaintManagementStyles.css" />
+}
+
+<div class="complaint-management-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-check-circle"></i> Resolve Complaint
+            </h1>
+            <p class="page-subtitle">Update the status of this resident complaint</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== COMPLAINT INFORMATION ===== -->
+    <div class="details-card">
+        <div class="details-card-header">
+            <i class="bi bi-file-text"></i> Complaint Information
+        </div>
+        <div class="details-card-body">
+            <div class="details-grid-two">
+                <!-- Left Column -->
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Ticket Number</span>
+                        <span class="detail-value">
+                            <span class="ticket-number">@Model.Complaint.TicketNumber</span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Resident Name</span>
+                        <span class="detail-value">@Model.Complaint.ResidentName</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact Number</span>
+                        <span class="detail-value">@Model.Complaint.ContactNumber</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Sitio</span>
+                        <span class="detail-value">@(Model.Complaint.Sitio?.SitioName ?? "N/A")</span>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Complaint Type</span>
+                        <span class="detail-value">@Model.Complaint.ComplaintType</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Current Status</span>
+                        <span class="detail-value">
+                            <span class="status-badge @(Model.Complaint.Status == "Awaiting Review" ? "status-awaiting" : Model.Complaint.Status == "Ongoing" ? "status-ongoing" : Model.Complaint.Status == "Accomplished" ? "status-accomplished" : "status-pending")">
+                                @Model.Complaint.Status
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Filed Date</span>
+                        <span class="detail-value">@Model.Complaint.FiledDate.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Details</span>
+                        <span class="detail-value detail-text">@Model.Complaint.Details</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Attachment -->
+            @if (Model.Complaint.HasImage)
+            {
+                <div class="image-attachment">
+                    <span class="image-label"><i class="bi bi-image"></i> Attached Photo</span>
+                    <button type="button" class="btn btn-preview-image" data-bs-toggle="modal" data-bs-target="#imagePreviewModal">
+                        <i class="bi bi-eye"></i> Preview Image
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ===== STATUS UPDATE FORM ===== -->
+    <div class="form-card">
+        <form asp-action="Resolve" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ComplaintId" value="@Model.ComplaintId" />
+
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="bi bi-arrow-repeat"></i> Update Status
+                </h3>
+                <p class="section-subtitle">Select the appropriate status based on the complaint's progress</p>
+
+                <div class="form-group">
+                    <label for="SelectedStatus" class="form-label">
+                        Status <span class="text-danger">*</span>
+                    </label>
+                    <select name="SelectedStatus" id="SelectedStatus" class="form-control form-control-select">
+                        <option value="">-- Select Status --</option>
+                        @foreach (var option in Model.StatusOptions)
+                        {
+                            var isSelected = Model.SelectedStatus == option.Value;
+                            <option value="@option.Value" selected="@isSelected">
+                                @option.Text
+                            </option>
+                        }
+                    </select>
+                    <span asp-validation-for="SelectedStatus" class="text-danger"></span>
+                    <div class="form-hint">
+                        <i class="bi bi-info-circle"></i> Status can be updated anytime if corrections are needed.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== STATUS HISTORY ===== -->
+            <div class="history-card">
+                <div class="history-card-header">
+                    <i class="bi bi-clock-history"></i> Status History
+                </div>
+                <div class="history-card-body">
+                    <div class="history-timeline">
+                        <!-- Step 1: Awaiting Review -->
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <span class="timeline-status">Awaiting Review</span>
+                                <span class="timeline-date">Complaint filed on @Model.Complaint.FiledDate.ToString("MMMM dd, yyyy")</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Ongoing (if applicable) -->
+                        @if (Model.Complaint.Status == "Ongoing" || Model.Complaint.Status == "Accomplished")
+                        {
+                            <div class="timeline-item @(Model.Complaint.Status == "Ongoing" ? "active" : "completed")">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-status">Ongoing</span>
+                                    @if (Model.Complaint.Status == "Ongoing" && Model.Complaint.UpdatedDate.HasValue)
+                                    {
+                                        <span class="timeline-date">Updated: @Model.Complaint.UpdatedDate.Value.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                                    }
+                                    else if (Model.Complaint.Status == "Accomplished")
+                                    {
+                                        <span class="timeline-date">Previously updated</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Step 3: Accomplished (if applicable) -->
+                        @if (Model.Complaint.Status == "Accomplished")
+                        {
+                            <div class="timeline-item completed">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <span class="timeline-status">Accomplished</span>
+                                    @if (Model.Complaint.UpdatedDate.HasValue)
+                                    {
+                                        <span class="timeline-date">Resolved: @Model.Complaint.UpdatedDate.Value.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== FORM ACTIONS ===== -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="bi bi-check-lg"></i> Save Status Update
+                </button>
+                <a asp-action="Index" class="btn btn-cancel-action">
+                    <i class="bi bi-x-lg"></i> Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+<!-- ===== IMAGE MODAL ===== -->
+@if (Model.Complaint.HasImage)
+{
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagePreviewModalLabel">Attached Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="@Model.Complaint.ImageUrl" alt="Complaint photo" class="img-fluid rounded" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

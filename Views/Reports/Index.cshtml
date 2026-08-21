@@ -1,0 +1,138 @@
+@model TisaWasteManagement.Models.ReportViewModel
+
+@{
+    ViewData["Title"] = "Generate Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ReportsStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <i class="bi bi-file-earmark-bar-graph"></i> Generate Reports
+            </h1>
+            <p class="page-subtitle">Generate summary reports based on waste collection and complaint data</p>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger-custom"></div>
+
+    <!-- ===== FORM CARD ===== -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-sliders2"></i> Report Settings</h4>
+        </div>
+        <div class="module-card-body">
+
+            <form asp-action="Generate" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+                    <!-- Report Type -->
+                    <div class="form-group">
+                        <label asp-for="ReportType" class="form-label">
+                            Report Type <span class="required">*</span>
+                        </label>
+                        <select asp-for="ReportType" class="form-control" asp-items="Model.ReportTypes" onchange="toggleStatusDropdown()"></select>
+                        <span asp-validation-for="ReportType" class="text-danger"></span>
+                    </div>
+
+                    <!-- Export Format -->
+                    <div class="form-group">
+                        <label asp-for="ExportFormat" class="form-label">
+                            Export Format <span class="required">*</span>
+                        </label>
+                        <select asp-for="ExportFormat" class="form-control" asp-items="Model.ExportFormats"></select>
+                        <span asp-validation-for="ExportFormat" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <!-- Start Date -->
+                    <div class="form-group">
+                        <label asp-for="StartDate" class="form-label">Start Date</label>
+                        <input asp-for="StartDate" class="form-control" type="date" />
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="form-group">
+                        <label asp-for="EndDate" class="form-label">End Date</label>
+                        <input asp-for="EndDate" class="form-control" type="date" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <!-- Status Filter -->
+                    <div class="form-group">
+                        <label class="form-label">Status Filter</label>
+
+                        <!-- Collection Status Filter -->
+                        <select id="collectionStatusFilter" name="StatusFilter" class="form-control"
+                                asp-items="Model.CollectionStatusOptions"></select>
+
+                        <!-- Complaint Status Filter -->
+                        <select id="complaintStatusFilter" name="StatusFilter" class="form-control"
+                                asp-items="Model.ComplaintStatusOptions" style="display:none;" disabled></select>
+                    </div>
+
+                    <!-- Sitio Filter -->
+                    <div class="form-group">
+                        <label asp-for="SitioId" class="form-label">Sitio Filter</label>
+                        <select asp-for="SitioId" class="form-control" asp-items="Model.SitioOptions">
+                            <option value="">All Sitios</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ===== FORM ACTIONS ===== -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-download"></i> Generate Report
+                    </button>
+                    <a asp-action="Index" class="btn btn-cancel">
+                        <i class="bi bi-arrow-clockwise"></i> Reset
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function toggleStatusDropdown() {
+            var reportType = document.getElementById('ReportType').value;
+            var collectionSelect = document.getElementById('collectionStatusFilter');
+            var complaintSelect = document.getElementById('complaintStatusFilter');
+
+            if (reportType === 'Complaint') {
+                collectionSelect.style.display = 'none';
+                collectionSelect.disabled = true;
+
+                complaintSelect.style.display = '';
+                complaintSelect.disabled = false;
+            } else {
+                collectionSelect.style.display = '';
+                collectionSelect.disabled = false;
+
+                complaintSelect.style.display = 'none';
+                complaintSelect.disabled = true;
+            }
+        }
+
+        toggleStatusDropdown();
+    </script>
+}

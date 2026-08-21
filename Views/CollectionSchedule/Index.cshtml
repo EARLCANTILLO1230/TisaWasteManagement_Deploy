@@ -1,0 +1,325 @@
+@model IEnumerable<TisaWasteManagement.Models.CollectionSchedule>
+
+@{
+    ViewData["Title"] = "Collection Schedules";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CollectionScheduleStyles.css" />
+}
+
+<div class="collection-schedule-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-calendar-check"></i> Collection Schedules
+            </h1>
+            <p class="page-subtitle">Manage and track all scheduled waste collection activities</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Create" class="btn btn-primary btn-create">
+                <i class="bi bi-plus-circle"></i> Create New Schedule
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== SEARCH & FILTERS ===== -->
+    <div class="search-filter-container">
+        <form asp-action="Index" method="get" class="search-filter-form">
+            <div class="search-filter-grid">
+                <!-- Search Input -->
+                <div class="filter-item search-item">
+                    <div class="input-group">
+                        <span class="input-group-icon"><i class="bi bi-search"></i></span>
+                        <input type="text"
+                               name="search"
+                               value="@ViewBag.Search"
+                               class="form-control search-input"
+                               placeholder="Search sitio, collector, truck, or status..." />
+                    </div>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="filter-item">
+                    <select name="statusFilter" class="form-select filter-select" onchange="this.form.submit()">
+                        <option value="All" selected="@((string)ViewBag.StatusFilter == null || (string)ViewBag.StatusFilter == "All" ? "selected" : null)">All Status</option>
+                        <option value="Pending" selected="@((string)ViewBag.StatusFilter == "Pending" ? "selected" : null)">Pending</option>
+                        <option value="Completed" selected="@((string)ViewBag.StatusFilter == "Completed" ? "selected" : null)">Completed</option>
+                        <option value="Delayed" selected="@((string)ViewBag.StatusFilter == "Delayed" ? "selected" : null)">Delayed</option>
+                        <option value="In Progress" selected="@((string)ViewBag.StatusFilter == "In Progress" ? "selected" : null)">In Progress</option>
+                    </select>
+                </div>
+
+                <!-- Day Filter -->
+                <div class="filter-item">
+                    <select name="dayFilter" class="form-select filter-select" onchange="this.form.submit()">
+                        <option value="" selected="@((string)ViewBag.DayFilter == null ? "selected" : null)">All Days</option>
+                        @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" })
+                        {
+                            <option value="@day" selected="@((string)ViewBag.DayFilter == day ? "selected" : null)">@day</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Date Range -->
+                <div class="filter-item date-range-item">
+                    <div class="date-range-group">
+                        <input type="date"
+                               name="startDate"
+                               class="form-control date-input"
+                               value="@(ViewBag.StartDate != null ? ((DateTime)ViewBag.StartDate).ToString("yyyy-MM-dd") : "")"
+                               placeholder="From"
+                               onchange="this.form.submit()"
+                               title="Start Date" />
+                        <span class="date-separator">to</span>
+                        <input type="date"
+                               name="endDate"
+                               class="form-control date-input"
+                               value="@(ViewBag.EndDate != null ? ((DateTime)ViewBag.EndDate).ToString("yyyy-MM-dd") : "")"
+                               placeholder="To"
+                               onchange="this.form.submit()"
+                               title="End Date" />
+                    </div>
+                </div>
+
+                <!-- Clear Button -->
+                @if (!string.IsNullOrEmpty((string)ViewBag.Search) || ViewBag.StartDate != null || ViewBag.EndDate != null)
+                {
+                    <div class="filter-item clear-item">
+                        <a asp-action="Index" class="btn btn-clear">
+                            <i class="bi bi-x-circle"></i> Clear
+                        </a>
+                    </div>
+                }
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== WEEK / RANGE INFO ===== -->
+    <div class="week-info-bar">
+        <div class="week-info-content">
+            <span class="week-info-icon">
+                <i class="bi @((bool)ViewBag.IsDateRangeMode ? "bi-calendar-range" : "bi-calendar-week")"></i>
+            </span>
+            <span class="week-info-text">
+                @if ((bool)ViewBag.IsDateRangeMode)
+                {
+                    @:Showing <strong>@Model.Count()</strong> schedule(s)
+                    if (ViewBag.StartDate != null)
+                    {
+                        @:from <strong>@(((DateTime)ViewBag.StartDate).ToString("MMM d, yyyy"))</strong>
+                    }
+                    if (ViewBag.EndDate != null)
+                    {
+                        @:to <strong>@(((DateTime)ViewBag.EndDate).ToString("MMM d, yyyy"))</strong>
+                    }
+                }
+                else
+                {
+                    @:Week of <strong>@(((DateTime)ViewBag.WeekStart).ToString("MMM d")) - @(((DateTime)ViewBag.WeekEnd).ToString("MMM d, yyyy"))</strong>
+                }
+            </span>
+        </div>
+    </div>
+
+    <!-- ===== TABLE ===== -->
+    @if (!Model.Any())
+    {
+        <div class="empty-state-container">
+            <div class="empty-state">
+                <i class="bi bi-calendar-x empty-icon"></i>
+                <h4 class="empty-title">No schedules found</h4>
+                <p class="empty-description">
+                    @((bool)ViewBag.IsDateRangeMode ? "No schedules for this date range." : "No schedules for this week.")
+                </p>
+                <a asp-action="Create" class="btn btn-primary btn-empty-action">
+                    <i class="bi bi-plus-circle"></i> Create New Schedule
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table schedule-table">
+                    <thead>
+                        <tr>
+                            <th class="col-day">Day &amp; Date</th>
+                            <th class="col-status">Status</th>
+                            <th class="col-driver">Driver</th>
+                            <th class="col-collectors">Collector(s)</th>
+                            <th class="col-truck">Truck</th>
+                            <th class="col-dump">Dump #</th>
+                            <th class="col-sitios">Sitios</th>
+                            <th class="col-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var schedule in Model)
+                        {
+                            <tr>
+                                <td class="col-day">
+                                    @if (schedule.DayOfWeek.HasValue)
+                                    {
+                                        var displayDate = TisaWasteManagement.Helpers.WeeklyRecurrenceHelper.GetDisplayDate(schedule);
+                                        <div class="day-info">
+                                            <span class="day-name">@schedule.DayOfWeek.Value.ToString()</span>
+                                            <span class="day-date">@displayDate.ToString("dddd, dd MMM yyyy")</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="col-status">
+                                    <span class="status-badge @(schedule.Status switch
+                                          {
+                                              "Completed" => "status-completed",
+                                              "Delayed" => "status-delayed",
+                                              "Cancelled" => "status-cancelled",
+                                              "In Progress" => "status-inprogress",
+                                              _ => "status-pending"
+                                          })">
+                                @schedule.Status
+                            </span>
+                            @if (schedule.Status == "Completed" && schedule.DateOfCompletion.HasValue)
+                                    {
+                                        <div class="completion-detail">@schedule.DateOfCompletion.Value.ToString("MMM d, yyyy h:mm tt")</div>
+                                    }
+                                </td>
+                                <td class="col-driver cell-truncate" title="@(schedule.Driver != null ? schedule.Driver.FirstName + " " + schedule.Driver.LastName : "N/A")">
+                                    @if (schedule.Driver != null)
+                                    {
+                                        <span class="crew-name">@(schedule.Driver.FirstName + " " + schedule.Driver.LastName)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td class="col-collectors cell-truncate" title="@(schedule.CollectionScheduleCollectors != null ? string.Join(", ", schedule.CollectionScheduleCollectors.Select(csc => csc.Collector?.FirstName + " " + csc.Collector?.LastName).Where(n => !string.IsNullOrWhiteSpace(n))) : "")">
+                                    @{
+                                        var collectorNames = schedule.CollectionScheduleCollectors?
+                                        .Select(csc => csc.Collector?.FirstName + " " + csc.Collector?.LastName)
+                                        .Where(n => !string.IsNullOrWhiteSpace(n))
+                                        .ToList();
+                                    }
+                                    @if (collectorNames != null && collectorNames.Any())
+                                    {
+                                        <span class="crew-names">@string.Join(", ", collectorNames)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td class="col-truck">
+                                    @if (schedule.GarbageTruck != null)
+                                    {
+                                        <span class="truck-info">
+                                            @(string.IsNullOrEmpty(schedule.GarbageTruck.PlateNumber) ? schedule.GarbageTruck.MVFileNumber : schedule.GarbageTruck.PlateNumber)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td class="col-dump text-center">
+                                    <span class="dump-number">@schedule.DumpNumber</span>
+                                </td>
+                                <td class="col-sitios cell-truncate" title="@(schedule.CollectionScheduleSitios != null ? string.Join(", ", schedule.CollectionScheduleSitios.Select(cs => cs.Sitio?.SitioName).Where(n => !string.IsNullOrEmpty(n))) : "")">
+                                    @if (schedule.CollectionScheduleSitios != null && schedule.CollectionScheduleSitios.Any())
+                                    {
+                                        var sitioNames = schedule.CollectionScheduleSitios
+                                        .Select(cs => cs.Sitio?.SitioName)
+                                        .Where(n => !string.IsNullOrEmpty(n))
+                                        .ToList();
+                                        <span class="sitio-names">@string.Join(", ", sitioNames)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td class="col-actions">
+                                    <div class="action-group">
+                                        <a asp-action="Details" asp-route-id="@schedule.CollectionScheduleId" class="btn-action btn-view" title="View Details">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@schedule.CollectionScheduleId" class="btn-action btn-edit" title="Edit Schedule">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <!-- ===== PAGINATION ===== -->
+    @{
+        int currentPage = ViewBag.CurrentPage;
+        int totalPages = ViewBag.TotalPages;
+    }
+    @if (totalPages > 1)
+    {
+        <nav class="pagination-container" aria-label="Schedule list pages">
+            <ul class="pagination-list">
+                <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-search="@ViewBag.Search"
+                       asp-route-statusFilter="@ViewBag.StatusFilter"
+                       asp-route-dayFilter="@ViewBag.DayFilter"
+                       asp-route-startDate="@ViewBag.StartDate"
+                       asp-route-endDate="@ViewBag.EndDate">
+                        <i class="bi bi-chevron-left"></i> Previous
+                    </a>
+                </li>
+                <li class="page-item active">
+                    <span class="page-link">@currentPage <span class="page-total">of @totalPages</span></span>
+                </li>
+                <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-search="@ViewBag.Search"
+                       asp-route-statusFilter="@ViewBag.StatusFilter"
+                       asp-route-dayFilter="@ViewBag.DayFilter"
+                       asp-route-startDate="@ViewBag.StartDate"
+                       asp-route-endDate="@ViewBag.EndDate">
+                        Next <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+
+</div>

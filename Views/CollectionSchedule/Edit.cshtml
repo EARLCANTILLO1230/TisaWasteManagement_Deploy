@@ -1,0 +1,353 @@
+@model TisaWasteManagement.Models.CollectionSchedule
+
+@{
+    ViewData["Title"] = "Edit Collection Schedule";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CollectionScheduleStyles.css" />
+}
+
+<div class="collection-schedule-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-pencil-square"></i> Edit Collection Schedule
+            </h1>
+            <p class="page-subtitle">Update the details of this collection schedule</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== FORM ===== -->
+    <div class="form-card">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.CollectionScheduleId)
+
+            <div class="form-grid">
+
+                <!-- ===== LEFT COLUMN ===== -->
+                <div class="form-column">
+
+                    <!-- Days of the Week -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-calendar-week"></i> Day(s) of the Week
+                            <span class="required-badge">Required</span>
+                        </h3>
+                        <p class="section-subtitle">Select which day(s) this schedule will run</p>
+
+                        <div class="days-grid">
+                            @{
+                                var selectedDays = ViewBag.SelectedDays as List<DayOfWeek> ?? new List<DayOfWeek>();
+                            }
+                            @foreach (var day in new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday })
+                            {
+                                <div class="day-checkbox-item">
+                                    <input class="form-check-input day-checkbox" type="checkbox" name="SelectedDays" id="day_@day" value="@day" @(selectedDays.Contains(day) ? "checked" : "") />
+                                    <label class="form-check-label" for="day_@day">@day</label>
+                                </div>
+                            }
+                        </div>
+                        <span class="text-danger">@Html.ValidationMessage("SelectedDays")</span>
+
+                        <!-- Repeat Weekly Toggle -->
+                        <div class="repeat-toggle">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="RepeatWeekly" name="RepeatWeekly" value="true" @(Model.RepeatWeekly ? "checked" : "") />
+                                <label class="form-check-label" for="RepeatWeekly">
+                                    <strong>Repeat Weekly</strong>
+                                    <span class="toggle-hint">(The schedule will repeat every selected day)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sitios -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-geo-alt"></i> Sitio(s)
+                            <span class="required-badge">Required</span>
+                        </h3>
+                        <p class="section-subtitle">Select the sitios to be collected</p>
+
+                        @{
+                            var selected = ViewBag.SelectedSitioIds as List<int> ?? new List<int>();
+                        }
+                        <div id="sitioPlaceholder" class="placeholder-message">
+                            <i class="bi bi-info-circle"></i> Please select a day above first.
+                        </div>
+                        <div id="sitioList" class="sitios-grid" style="display: none;">
+                            @foreach (var sitio in (SelectList)ViewBag.Sitios)
+                            {
+                                var value = int.Parse(sitio.Value ?? "0");
+                                var isChecked = selected.Contains(value);
+                                <div class="sitio-checkbox-item" data-sitio-id="@value">
+                                    <input class="form-check-input" type="checkbox" name="SelectedSitioIds" id="sitio_@value" value="@value" @(isChecked ? "checked" : "") />
+                                    <label class="form-check-label" for="sitio_@value">@sitio.Text</label>
+                                </div>
+                            }
+                        </div>
+                        @Html.ValidationMessage("Sitio", null, new { @class = "text-danger" })
+                        <div class="form-hint">
+                            <i class="bi bi-info-circle"></i> Sitios already scheduled on a selected day are hidden.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== RIGHT COLUMN ===== -->
+                <div class="form-column">
+
+                    <!-- Driver -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-person"></i> Driver
+                            <span class="required-badge">Required</span>
+                        </h3>
+                        @{
+                            var selectedDriverId = ViewBag.SelectedDriverId as int?;
+                        }
+                        <select class="form-select form-control-select" id="SelectedDriverId" name="SelectedDriverId">
+                            <option value="">-- Select a driver --</option>
+                            @foreach (var drv in (List<SelectListItem>)ViewBag.DriversList)
+                            {
+                                var isSelected = selectedDriverId.HasValue && drv.Value == selectedDriverId.Value.ToString();
+                                <option value="@drv.Value" selected="@isSelected">@drv.Text</option>
+                            }
+                        </select>
+                        @Html.ValidationMessage("Driver", null, new { @class = "text-danger" })
+                        <div class="form-hint">
+                            <i class="bi bi-info-circle"></i> Drivers already assigned on a selected day, or with that day off, are hidden.
+                        </div>
+                    </div>
+
+                    <!-- Collectors -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-people"></i> Collector(s)
+                            <span class="required-badge">Required</span>
+                        </h3>
+                        <p class="section-subtitle">Select one or more collectors</p>
+
+                        @{
+                            var selectedCollectorIds = ViewBag.SelectedCollectorIds as List<int> ?? new List<int>();
+                        }
+                        <div id="collectorList" class="collectors-grid">
+                            @foreach (var col in (List<SelectListItem>)ViewBag.CollectorsList)
+                            {
+                                var value = int.Parse(col.Value ?? "0");
+                                var isChecked = selectedCollectorIds.Contains(value);
+                                <div class="collector-checkbox-item" data-collector-id="@value">
+                                    <input class="form-check-input" type="checkbox" name="SelectedCollectorIds" id="collector_@value" value="@value" @(isChecked ? "checked" : "") />
+                                    <label class="form-check-label" for="collector_@value">@col.Text</label>
+                                </div>
+                            }
+                        </div>
+                        @Html.ValidationMessage("Collector", null, new { @class = "text-danger" })
+                        <div class="form-hint">
+                            <i class="bi bi-info-circle"></i> Collectors already assigned on a selected day, or with that day off, are hidden.
+                        </div>
+                    </div>
+
+                    <!-- Garbage Truck -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-truck"></i> Garbage Truck
+                            <span class="required-badge">Required</span>
+                        </h3>
+                        @{
+                            var selectedTruckId = ViewBag.SelectedGarbageTruckId as int?;
+                        }
+                        <select class="form-select form-control-select" id="SelectedGarbageTruckId" name="SelectedGarbageTruckId">
+                            <option value="">-- Select a garbage truck --</option>
+                            @foreach (var t in (List<SelectListItem>)ViewBag.GarbageTrucksList)
+                            {
+                                var isSelected = selectedTruckId.HasValue && t.Value == selectedTruckId.Value.ToString();
+                                <option value="@t.Value" selected="@isSelected">@t.Text</option>
+                            }
+                        </select>
+                        @Html.ValidationMessage("GarbageTruck", null, new { @class = "text-danger" })
+                    </div>
+
+                    <!-- Dump Number -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-hash"></i> Dump Number
+                            <span class="required-badge">Auto-assigned</span>
+                        </h3>
+                        <p class="section-subtitle">Automatically assigned based on selected truck and day</p>
+                        <input type="number" class="form-control form-control-input" id="DumpNumber" name="DumpNumber" min="1" max="99" value="@Model.DumpNumber" readonly />
+                        @Html.ValidationMessage("DumpNumber", null, new { @class = "text-danger" })
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="bi bi-sticky"></i> Notes
+                            <span class="optional-badge">Optional</span>
+                        </h3>
+                        <textarea id="Note" name="Note" class="form-control form-control-textarea" rows="4" placeholder="Enter any additional notes or special instructions...">@Model.Note</textarea>
+                        <div class="form-hint">
+                            <i class="bi bi-info-circle"></i> Maximum 500 characters.
+                        </div>
+                    </div>
+
+                    <!-- ===== FORM ACTIONS ===== -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-save">
+                            <i class="bi bi-check-lg"></i> Update Schedule
+                        </button>
+                        <a asp-action="Index" class="btn btn-cancel btn-cancel-action">
+                            <i class="bi bi-x-lg"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        var sitioBookings = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((Dictionary<int, List<string>>)(ViewBag.SitioDayBookings ?? new Dictionary<int, List<string>>())));
+        var collectorBookings = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((Dictionary<int, List<string>>)(ViewBag.CollectorDayBookings ?? new Dictionary<int, List<string>>())));
+        var collectorDaysOff = @Html.Raw(System.Text.Json.JsonSerializer.Serialize((Dictionary<int, List<string>>)(ViewBag.CollectorDaysOff ?? new Dictionary<int, List<string>>())));
+
+        function getSelectedDays() {
+            var days = [];
+            document.querySelectorAll('.day-checkbox:checked').forEach(function (cb) {
+                days.push(cb.value);
+            });
+            return days;
+        }
+
+        function isBooked(bookingMap, id, selectedDays) {
+            var bookedDays = bookingMap[id];
+            if (!bookedDays) return false;
+            for (var i = 0; i < selectedDays.length; i++) {
+                if (bookedDays.indexOf(selectedDays[i]) !== -1) return true;
+            }
+            return false;
+        }
+
+        function updateAvailability() {
+            var selectedDays = getSelectedDays();
+            var sitioList = document.getElementById('sitioList');
+            var sitioPlaceholder = document.getElementById('sitioPlaceholder');
+            var driverSelect = document.getElementById('SelectedDriverId');
+
+            if (selectedDays.length === 0) {
+                sitioList.style.display = 'none';
+                sitioPlaceholder.style.display = 'block';
+            } else {
+                sitioList.style.display = 'grid';
+                sitioPlaceholder.style.display = 'none';
+
+                document.querySelectorAll('#sitioList .sitio-checkbox-item').forEach(function (item) {
+                    var booked = isBooked(sitioBookings, item.getAttribute('data-sitio-id'), selectedDays);
+                    item.style.display = booked ? 'none' : '';
+                    if (booked) {
+                        var input = item.querySelector('input[type="checkbox"]');
+                        if (input) input.checked = false;
+                    }
+                });
+            }
+
+            Array.from(driverSelect.options).forEach(function (option) {
+                if (option.value === '') return;
+                var booked = isBooked(collectorBookings, option.value, selectedDays);
+                var onDayOff = isBooked(collectorDaysOff, option.value, selectedDays);
+                var hide = booked || onDayOff;
+                option.hidden = hide;
+                if (hide && option.selected) {
+                    driverSelect.value = '';
+                }
+            });
+
+            document.querySelectorAll('#collectorList .collector-checkbox-item').forEach(function (item) {
+                var id = item.getAttribute('data-collector-id');
+                var booked = isBooked(collectorBookings, id, selectedDays);
+                var onDayOff = isBooked(collectorDaysOff, id, selectedDays);
+                var hide = booked || onDayOff;
+                item.style.display = hide ? 'none' : '';
+                if (hide) {
+                    var input = item.querySelector('input[type="checkbox"]');
+                    if (input) input.checked = false;
+                }
+            });
+        }
+
+        document.querySelectorAll('.day-checkbox').forEach(function (cb) {
+            cb.addEventListener('change', updateAvailability);
+        });
+
+        updateAvailability();
+
+        var dumpNumberInput = document.getElementById('DumpNumber');
+        var truckSelect = document.getElementById('SelectedGarbageTruckId');
+        var currentScheduleId = @Model.CollectionScheduleId;
+
+        function fetchNextDumpNumber() {
+            var truckId = truckSelect.value;
+            var selectedDays = getSelectedDays();
+
+            if (!truckId || selectedDays.length === 0) {
+                return;
+            }
+
+            var day = selectedDays[0];
+
+            fetch('/CollectionSchedule/GetNextDumpNumber?truckId=' + encodeURIComponent(truckId) + '&day=' + encodeURIComponent(day) + '&excludeScheduleId=' + currentScheduleId)
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    dumpNumberInput.value = data.dumpNumber;
+                });
+        }
+
+        truckSelect.addEventListener('change', fetchNextDumpNumber);
+        document.querySelectorAll('.day-checkbox').forEach(function (cb) {
+            cb.addEventListener('change', fetchNextDumpNumber);
+        });
+
+        fetchNextDumpNumber();
+
+        (function () {
+            var form = document.querySelector('form[asp-action="Edit"]') || document.querySelector('form');
+            if (!form) return;
+            form.addEventListener('submit', function (e) {
+                var driverSelect = form.querySelector('select[name="SelectedDriverId"]');
+                if (driverSelect && !driverSelect.value) {
+                    e.preventDefault();
+                    alert('Please select a driver.');
+                    return;
+                }
+                var collectorChecked = form.querySelectorAll('input[name="SelectedCollectorIds"]:checked');
+                if (collectorChecked.length === 0) {
+                    e.preventDefault();
+                    alert('Please select at least one collector.');
+                }
+            });
+        })();
+    </script>
+}

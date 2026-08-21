@@ -1,0 +1,72 @@
+@model TisaWasteManagement.Models.Collector
+
+@{
+    ViewData["Title"] = "Crew Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CollectorStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Crew Details</h1>
+            <p class="page-subtitle">View crew member information</p>
+        </div>
+        <div class="page-actions">
+            <a asp-action="Edit" asp-route-id="@Model?.CollectorId" class="btn-primary">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
+        </div>
+    </div>
+
+    <!-- Details -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-person"></i> Crew Information</h4>
+        </div>
+        <div class="module-card-body">
+            <dl class="detail-list">
+                <div class="detail-row">
+                    <dt class="detail-label">First Name</dt>
+                    <dd class="detail-value">@Html.DisplayFor(model => model.FirstName)</dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-label">Last Name</dt>
+                    <dd class="detail-value">@Html.DisplayFor(model => model.LastName)</dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-label">Contact Number</dt>
+                    <dd class="detail-value">@Html.DisplayFor(model => model.ContactNumber)</dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-label">Address</dt>
+                    <dd class="detail-value">@Html.DisplayFor(model => model.Address)</dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-label">Days Off</dt>
+                    <dd class="detail-value">@(string.IsNullOrEmpty(Model.DaysOff) ? "None" : Model.DaysOff.Replace(",", ", "))</dd>
+                </div>
+                <div class="detail-row">
+                    <dt class="detail-label">Role</dt>
+                    <dd class="detail-value">
+                        <span class="badge-status @(Model.Role == "Driver" ? "badge-driver" : "badge-collector")">
+                            @Html.DisplayFor(model => model.Role)
+                        </span>
+                    </dd>
+                </div>
+            </dl>
+
+            <div class="form-actions">
+                <a asp-action="Index" class="btn-cancel">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>

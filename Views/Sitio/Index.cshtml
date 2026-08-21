@@ -1,0 +1,142 @@
+@model PaginatedList<TisaWasteManagement.Models.Sitio>
+
+@{
+    ViewData["Title"] = "Zone / Sitio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/SitioStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Zone / Sitio</h1>
+            <p class="page-subtitle">Manage barangay zones and sitios</p>
+        </div>
+        <div class="page-actions">
+            <a asp-action="Create" class="btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    @{
+        var success = TempData["SuccessMessage"] as string;
+    }
+    @if (!string.IsNullOrEmpty(success))
+    {
+        <div class="alert-success-custom">
+            <i class="bi bi-check-circle"></i>
+            @success
+        </div>
+    }
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search sitio name...">
+            <button class="btn-search" type="button" onclick="filterTable()">Search</button>
+        </div>
+        <span class="record-count">@Model.TotalItems records</span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <table class="module-table" id="dataTable">
+            <thead>
+                <tr>
+                    <th>
+                        Sitio Name <span class="sort-indicator">(A-Z)</span>
+                    </th>
+                    <th class="text-center" style="width: 100px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SitioName)
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@item.SitioId" class="btn-edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="pagination-wrapper">
+            <nav aria-label="Page navigation">
+                <ul class="pagination-custom">
+                    <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                        <a asp-action="Index"
+                           asp-route-pageNumber="@(Model.PageIndex - 1)"
+                           class="page-link">
+                            <i class="bi bi-chevron-left"></i> Previous
+                        </a>
+                    </li>
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        var activeClass = i == Model.PageIndex ? "active" : "";
+                        <li class="page-item @activeClass">
+                            <a asp-action="Index"
+                               asp-route-pageNumber="@i"
+                               class="page-link">@i</a>
+                        </li>
+                    }
+
+                    <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                        <a asp-action="Index"
+                           asp-route-pageNumber="@(Model.PageIndex + 1)"
+                           class="page-link">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+
+    <!-- Record Summary -->
+    <div class="record-summary">
+        Showing <strong>@Model.FirstItemOnPage</strong> to <strong>@Model.LastItemOnPage</strong> of <strong>@Model.TotalItems</strong> records
+        <span class="sort-info">(sorted alphabetically A-Z)</span>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        function filterTable() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById('dataTable');
+            var rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(function(row) {
+                var text = row.textContent || row.innerText;
+                row.style.display = text.toUpperCase().indexOf(filter) > -1 ? '' : 'none';
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterTable();
+            }
+        });
+    </script>
+}

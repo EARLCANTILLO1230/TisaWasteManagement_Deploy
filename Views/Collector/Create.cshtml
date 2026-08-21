@@ -1,0 +1,124 @@
+@model TisaWasteManagement.Models.Collector
+
+@{
+    ViewData["Title"] = "Add Garbage Crew";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CollectorStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Add Garbage Crew</h1>
+            <p class="page-subtitle">Add a new collector or driver</p>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger-custom">
+            <i class="bi bi-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Form -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-person"></i> Crew Information</h4>
+        </div>
+        <div class="module-card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert-danger-custom" style="margin-bottom: 16px;"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="form-label">
+                            First Name <span class="required">*</span>
+                        </label>
+                        <input asp-for="FirstName" class="form-control" placeholder="Enter first name..." />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="LastName" class="form-label">
+                            Last Name <span class="required">*</span>
+                        </label>
+                        <input asp-for="LastName" class="form-control" placeholder="Enter last name..." />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="ContactNumber" class="form-label">
+                            Contact Number <span class="required">*</span>
+                        </label>
+                        <input asp-for="ContactNumber" class="form-control" placeholder="e.g. 09*********" />
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                        <span class="form-text">Enter a valid contact number.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Address" class="form-label">
+                            Address <span class="required">*</span>
+                        </label>
+                        <input asp-for="Address" class="form-control" placeholder="Enter address..." />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Role" class="form-label">
+                            Role <span class="required">*</span>
+                        </label>
+                        <select asp-for="Role" class="form-control">
+                            <option value="Collector">Collector</option>
+                            <option value="Driver">Driver</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Days Off</label>
+                        <div class="days-off-container">
+                            @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" })
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="SelectedDaysOff" id="dayoff_@day" value="@day" />
+                                    <label class="form-check-label" for="dayoff_@day">@day</label>
+                                </div>
+                            }
+                        </div>
+                        <span class="form-text">Select the days this crew member is not available.</span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-check-lg"></i> Save
+                    </button>
+                    <a asp-action="Index" class="btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

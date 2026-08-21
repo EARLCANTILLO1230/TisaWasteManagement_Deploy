@@ -1,0 +1,99 @@
+@model TisaWasteManagement.Models.AccountCreateViewModel
+
+@{
+    // This page only ever creates Inspector accounts - see the NOTE at the
+    // top of AccountManagementController.cs for why Admin creation isn't
+    // offered here.
+    ViewData["Title"] = "Add Inspector Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AccountManagementStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Add Inspector Account</h1>
+            <p class="page-subtitle">Create a new inspector account</p>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger-custom">
+            <i class="bi bi-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Form -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-person-plus"></i> Account Information</h4>
+        </div>
+        <div class="module-card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Hidden field - always "Inspector" on this form. The
+                     controller re-checks this value too (it doesn't just
+                     trust whatever gets posted), so this field existing is
+                     just for the AccountCreateViewModel's Type property to
+                     have a value - it's not what actually enforces the
+                     "Inspector only" rule. -->
+                <input type="hidden" asp-for="Type" />
+
+                <div asp-validation-summary="ModelOnly" class="alert-danger-custom" style="margin-bottom: 16px;"></div>
+
+                <div class="form-group">
+                    <label asp-for="Username" class="form-label">
+                        Username <span class="required">*</span>
+                    </label>
+                    <input asp-for="Username" class="form-control" placeholder="Enter username..." />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                    <span class="form-text">Choose a unique username for this inspector account.</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Password" class="form-label">
+                            Password <span class="required">*</span>
+                        </label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Enter password..." />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <span class="form-text">Minimum 6 characters.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword" class="form-label">
+                            Confirm Password <span class="required">*</span>
+                        </label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm password..." />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-check-lg"></i> Create
+                    </button>
+                    <a asp-action="Index" class="btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

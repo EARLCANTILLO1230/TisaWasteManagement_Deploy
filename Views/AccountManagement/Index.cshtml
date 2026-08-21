@@ -1,0 +1,107 @@
+@model List<TisaWasteManagement.Models.AccountListItemViewModel>
+
+@{
+    ViewData["Title"] = "Account Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AccountManagementStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Account Management</h1>
+            <p class="page-subtitle">Manage Admin and Inspector staff login accounts</p>
+        </div>
+        <div class="page-actions">
+            <!-- Creating new Admin accounts is not available from this page -
+                 only Inspector accounts can be created here. Existing Admin
+                 accounts (shown in the table below) can still be edited or
+                 have their password reset. -->
+            <a asp-action="Create" class="btn-primary">
+                <i class="bi bi-shield-check"></i> Add Inspector
+            </a>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success-custom">
+            <i class="bi bi-check-circle"></i>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Table -->
+    <div class="table-wrapper">
+        <div class="table-scroll">
+            <table class="module-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Type</th>
+                        <th>Created Date</th>
+                        <th>Last Updated</th>
+                        <th class="text-center" style="width: 240px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i class="bi bi-person"></i>
+                                    <h3>No accounts</h3>
+                                    <p>Click "Add Inspector" to create one.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var account in Model)
+                        {
+                            <tr>
+                                <td><strong>@account.Username</strong></td>
+                                <td>
+                                    @if (account.Type == TisaWasteManagement.Models.StaffAccountType.Admin)
+                                    {
+                                        <span class="type-badge type-badge-admin">Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="type-badge type-badge-inspector">Inspector</span>
+                                    }
+                                </td>
+                                <td>@account.CreatedDate.ToString("MMM d, yyyy")</td>
+                                <td>@(account.UpdatedDate?.ToString("MMM d, yyyy") ?? "-")</td>
+                                <td class="text-center">
+                                    <div class="action-buttons">
+                                        <!-- asp-route-type passes the account's type (Admin/Inspector)
+                                             along with its id, so Edit/ChangePassword know which
+                                             database table to look in. -->
+                                        <a asp-action="Edit" asp-route-type="@account.Type" asp-route-id="@account.Id" class="btn-edit">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a asp-action="ChangePassword" asp-route-type="@account.Type" asp-route-id="@account.Id" class="btn-change-password">
+                                            <i class="bi bi-key"></i> Change Password
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+

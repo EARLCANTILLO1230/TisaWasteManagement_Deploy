@@ -1,0 +1,240 @@
+@model TisaWasteManagement.Models.CollectionSchedule
+
+@{
+    ViewData["Title"] = "Update Collection Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CollectionMonitoringStyles.css" />
+}
+
+<div class="collection-monitoring-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-pencil-square"></i> Update Collection Status
+            </h1>
+            <p class="page-subtitle">Verify and update the collection status for each sitio</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== SCHEDULE SUMMARY ===== -->
+    <div class="summary-card">
+        <div class="summary-header">
+            <i class="bi bi-calendar-check"></i> Schedule Details
+        </div>
+        <div class="summary-body">
+            <div class="summary-grid">
+                <div>
+                    <span class="summary-label">Driver</span>
+                    <span class="summary-value">
+                        @(Model.Driver != null ? Model.Driver.FirstName + " " + Model.Driver.LastName : "N/A")
+                    </span>
+                </div>
+                <div>
+                    <span class="summary-label">Garbage Truck</span>
+                    <span class="summary-value">
+                        @(Model.GarbageTruck != null
+                                                ? (string.IsNullOrEmpty(Model.GarbageTruck.PlateNumber) ? Model.GarbageTruck.MVFileNumber : Model.GarbageTruck.PlateNumber)
+                                                : "N/A")
+                    </span>
+                </div>
+                <div>
+                    <span class="summary-label">Dump Number</span>
+                    <span class="summary-value">
+                        <span class="dump-number">@Model.DumpNumber</span>
+                    </span>
+                </div>
+                <div>
+                    <span class="summary-label">Current Status</span>
+                    <span class="summary-value">
+                        <span class="status-badge @(Model.Status switch
+                              {
+                                  "Completed" => "status-completed",
+                                  "Delayed" => "status-delayed",
+                                  "Cancelled" => "status-cancelled",
+                                  "In Progress" => "status-inprogress",
+                                  _ => "status-pending"
+                              })">
+                            @Model.Status
+                        </span>
+                        @if (Model.Status == "Completed" && Model.DateOfCompletion.HasValue)
+                        {
+                            <span class="summary-subvalue">Completed: @Model.DateOfCompletion.Value.ToString("MMM d, yyyy h:mm tt")</span>
+                        }
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FORM ===== -->
+    <div class="form-card">
+        <form asp-action="Edit" asp-route-id="@Model.CollectionScheduleId" method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- ===== SITIOS CHECKLIST ===== -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="bi bi-check-square"></i> Sitio Collection Status
+                </h3>
+                <p class="section-subtitle">Mark each sitio as Completed or Delayed based on field verification</p>
+
+                @{
+                    var activeSitios = Model.CollectionScheduleSitios?.Where(cs => cs.ReassignedToScheduleId == null).OrderBy(cs => cs.Sitio?.SitioName).ToList();
+                    var reassignedSitios = Model.CollectionScheduleSitios?.Where(cs => cs.ReassignedToScheduleId != null).OrderBy(cs => cs.Sitio?.SitioName).ToList();
+                }
+
+                @if (activeSitios == null || !activeSitios.Any())
+                {
+                    <div class="empty-state-small">
+                        <i class="bi bi-info-circle"></i>
+                        <p>No sitios are assigned to this schedule.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="sitios-checklist">
+                        @foreach (var scheduleSitio in activeSitios)
+                        {
+                            var sitioId = scheduleSitio.CollectionScheduleSitioId;
+                            <div class="sitio-check-item">
+                                <div class="sitio-check-header">
+                                    <span class="sitio-name">@scheduleSitio.Sitio?.SitioName</span>
+                                </div>
+                                <div class="sitio-check-options">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input sitio-status-radio" type="radio"
+                                               name="SitioStatuses[@sitioId]"
+                                               id="sitio_@(sitioId)_completed"
+                                               value="Completed"
+                                               data-sitio-id="@sitioId"
+                                               checked="@(scheduleSitio.Status == "Completed")" />
+                                        <label class="form-check-label" for="sitio_@(sitioId)_completed">Completed</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input sitio-status-radio" type="radio"
+                                               name="SitioStatuses[@sitioId]"
+                                               id="sitio_@(sitioId)_delayed"
+                                               value="Delayed"
+                                               data-sitio-id="@sitioId"
+                                               checked="@(scheduleSitio.Status == "Delayed")" />
+                                        <label class="form-check-label" for="sitio_@(sitioId)_delayed">Delayed</label>
+                                    </div>
+                                </div>
+
+                                <!-- Delay Reason -->
+                                <div class="delay-reason-group" id="delayReasonGroup_@sitioId"
+                                     style="display:@(scheduleSitio.Status == "Delayed" ? "block" : "none");">
+                                    <label class="form-label" for="reason_@sitioId">Reason for Delay <span class="text-danger">*</span></label>
+                                    <textarea class="form-control delay-reason-input"
+                                      id="reason_@sitioId"
+                                      name="SitioDelayReasons[@sitioId]"
+                                      rows="2"
+                                      maxlength="500"
+                                      placeholder="Please explain why this sitio was delayed...">@scheduleSitio.ReasonForDelay</textarea>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @if (reassignedSitios != null && reassignedSitios.Any())
+                {
+                    <div class="reassigned-section">
+                        <h4 class="reassigned-title">
+                            <i class="bi bi-arrow-right-circle"></i> Carried Over (no longer on this schedule)
+                        </h4>
+                        <div class="reassigned-list">
+                            @foreach (var scheduleSitio in reassignedSitios)
+                            {
+                                <span class="reassigned-item">
+                                    <span class="status-badge status-inprogress">Reassigned</span>
+                                    @scheduleSitio.Sitio?.SitioName
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- ===== REMARKS ===== -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="bi bi-sticky"></i> Remarks
+                </h3>
+                <p class="section-subtitle">Add any additional notes about the collection verification</p>
+                <textarea name="remarks" class="form-control form-control-textarea" rows="3" maxlength="500" placeholder="Enter any remarks or observations...">@ViewBag.CurrentRemarks</textarea>
+                <div class="form-hint">
+                    <i class="bi bi-info-circle"></i> Maximum 500 characters.
+                </div>
+            </div>
+
+            <!-- ===== FORM ACTIONS ===== -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="bi bi-check-lg"></i> Save
+                </button>
+                <a asp-action="Index" class="btn btn-cancel-action">
+                    <i class="bi bi-x-lg"></i> Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.sitio-status-radio').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                var sitioId = this.dataset.sitioId;
+                var group = document.getElementById('delayReasonGroup_' + sitioId);
+                if (group) {
+                    var textarea = group.querySelector('.delay-reason-input');
+                    var delayedPicked = document.getElementById('sitio_' + sitioId + '_delayed');
+                    var isDelayed = delayedPicked ? delayedPicked.checked : false;
+
+                    group.style.display = isDelayed ? 'block' : 'none';
+                    if (textarea) {
+                        textarea.required = isDelayed;
+                        if (!isDelayed) {
+                            textarea.value = '';
+                        }
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('.sitio-status-radio:checked').forEach(function (radio) {
+            var sitioId = radio.dataset.sitioId;
+            var group = document.getElementById('delayReasonGroup_' + sitioId);
+            if (group) {
+                var delayedPicked = document.getElementById('sitio_' + sitioId + '_delayed');
+                if (delayedPicked && delayedPicked.checked) {
+                    group.style.display = 'block';
+                    var textarea = group.querySelector('.delay-reason-input');
+                    if (textarea) textarea.required = true;
+                }
+            }
+        });
+    </script>
+}

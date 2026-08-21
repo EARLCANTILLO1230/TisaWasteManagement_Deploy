@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TisaWasteManagement</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TisaWasteManagement.styles.css" asp-append-version="true" />
+
+    <!-- This renders the Styles section from child pages -->
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Left Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <!-- Brand with Logo -->
+        <a class="brand" asp-controller="Admin" asp-action="Index">
+            <img src="~/images/TISA_LOGO-removebg-preview.png"
+                 alt="Barangay Tisa Logo"
+                 class="brand-logo" />
+            <div>
+                <span>Barangay Tisa</span>
+                <small>Waste Management</small>
+            </div>
+        </a>
+
+        <div class="nav flex-column sidebar-nav">
+            @{
+                var staffRole = Context.Session.GetString("StaffRole");
+            }
+
+            @if (staffRole == "Admin")
+            {
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")"
+                   asp-controller="Admin" asp-action="Index">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            }
+
+            @if (staffRole == "Inspector")
+            {
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Inspector" ? "active" : "")"
+                   asp-controller="Inspector" asp-action="Index">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            }
+
+            @if (staffRole == "Admin")
+            {
+                <!-- Admin Side -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Sitio" ? "active" : "")"
+                   asp-area="" asp-controller="Sitio" asp-action="Index">
+                    <i class="bi bi-geo-alt"></i> Zone / Sitio
+                </a>
+                <!-- Admin Side -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Collector" ? "active" : "")"
+                   asp-area="" asp-controller="Collector" asp-action="Index">
+                    <i class="bi bi-person-badge"></i> Garbage Crew
+                </a>
+                <!-- Admin Account and Inspector Account were combined into
+                     one "Account Management" module, so this is now a
+                     single nav link instead of two. -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AccountManagement" ? "active" : "")"
+                   asp-area="" asp-controller="AccountManagement" asp-action="Index">
+                    <i class="bi bi-people"></i> Account Management
+                </a>
+                <!-- Admin Side -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "GarbageTruck" ? "active" : "")"
+                   asp-area="" asp-controller="GarbageTruck" asp-action="Index">
+                    <i class="bi bi-truck"></i> Garbage Truck
+                </a>
+                <!-- Admin Side -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CollectionSchedule" ? "active" : "")"
+                   asp-area="" asp-controller="CollectionSchedule" asp-action="Index">
+                    <i class="bi bi-calendar-check"></i> Collection Schedule
+                </a>
+            }
+
+            @if (staffRole == "Admin" || staffRole == "Inspector")
+            {
+                <!-- Admin & Inspector Side -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CollectionMonitoring" ? "active" : "")"
+                   asp-area="" asp-controller="CollectionMonitoring" asp-action="Index">
+                    <i class="bi bi-clipboard-check"></i> Collection Monitoring
+                </a>
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "ComplaintManagement" ? "active" : "")"
+                   asp-area="" asp-controller="ComplaintManagement" asp-action="Index">
+                    <i class="bi bi-tools"></i> @(staffRole == "Inspector" ? "Resolve Complaint" : "Complaint Records")
+                </a>
+                <!-- Report Generation module - both Admin and Inspector can generate reports -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Reports" ? "active" : "")"
+                   asp-area="" asp-controller="Reports" asp-action="Index">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Reports
+                </a>
+            }
+
+            @if (staffRole == "Admin")
+            {
+                <!-- SMS Module - Admin only, shows history of complaint-update SMS -->
+                <a class="nav-link" asp-area="" asp-controller="Sms" asp-action="Index">
+                    <i class="bi bi-envelope"></i> SMS Logs
+                </a>
+            }
+
+            @if (staffRole == "Admin")
+            {
+                <!-- Admin Side - RECORDS MANAGEMENT (Last) -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "RecordsManagement" ? "active" : "")"
+                   asp-area="" asp-controller="RecordsManagement" asp-action="Index">
+                    <i class="bi bi-archive"></i> Records Management
+                </a>
+            }
+
+            @if (staffRole == "Admin")
+            {
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "AnnouncementandBulletinBoard" ? "active" : "")"
+                   asp-area="" asp-controller="AnnouncementandBulletinBoard" asp-action="Index">
+                    <i class="bi bi-megaphone"></i> Announcements &amp; Bulletin Board
+                </a>
+            }
+
+            @if (staffRole == "Admin")
+            {
+                <!-- File Management module - Admin only -->
+                <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "File" ? "active" : "")"
+                   asp-area="" asp-controller="File" asp-action="Index">
+                    <i class="bi bi-folder"></i> File Management
+                </a>
+            }
+
+            <!-- Spacer to push logout to bottom -->
+            <div class="sidebar-spacer"></div>
+
+            <!-- Logout - always visible when logged in -->
+            @if (!string.IsNullOrEmpty(staffRole))
+            {
+                <a class="nav-link logout-link" asp-controller="Account" asp-action="Logout">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            }
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.querySelector('.sidebar-overlay').classList.toggle('show');
+        }
+
+        $(document).ready(function() {
+            // Close sidebar on mobile when clicking a link
+            $('.sidebar .nav-link').on('click', function() {
+                if (window.innerWidth <= 768) {
+                    $('#sidebar').removeClass('show');
+                    $('.sidebar-overlay').removeClass('show');
+                }
+            });
+
+            $('.sidebar-overlay').on('click', function() {
+                $('#sidebar').removeClass('show');
+                $('.sidebar-overlay').removeClass('show');
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

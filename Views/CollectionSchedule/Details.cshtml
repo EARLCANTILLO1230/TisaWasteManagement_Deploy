@@ -1,0 +1,390 @@
+﻿@model TisaWasteManagement.Models.CollectionSchedule
+@using TisaWasteManagement.Helpers
+
+@{
+    ViewData["Title"] = "Schedule Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CollectionScheduleStyles.css" />
+}
+
+<div class="collection-schedule-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-info-circle"></i> Schedule Details
+            </h1>
+            <p class="page-subtitle">View the full details of this collection schedule</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== DETAILS GRID ===== -->
+    <div class="details-grid">
+
+        <!-- ===== LEFT COLUMN ===== -->
+        <div class="details-column">
+
+            <!-- Schedule Information -->
+            <div class="details-card">
+                <div class="details-card-header">
+                    <i class="bi bi-calendar-check"></i> Schedule Information
+                </div>
+                <div class="details-card-body">
+                    <div class="detail-row">
+                        <span class="detail-label">Collection Day</span>
+                        <span class="detail-value">
+                            @if (Model.RepeatWeekly)
+                            {
+                                var repeatDays = ViewBag.RepeatDays as string;
+                                if (!string.IsNullOrEmpty(repeatDays))
+                                {
+                                    <span>Every @repeatDays</span>
+                                }
+                                else
+                                {
+                                    <span>Every @(Model.DayOfWeek?.ToString() ?? "-")</span>
+                                }
+                            }
+                            else
+                            {
+                                if (Model.DayOfWeek.HasValue)
+                                {
+                                    DateTime scheduledDate = Model.CreatedDate?.Date ?? DateTime.Today;
+                                    if (!Model.CreatedDate.HasValue)
+                                    {
+                                        var today = DateTime.Today;
+                                        var target = (int)Model.DayOfWeek.Value;
+                                        var todayDow = (int)today.DayOfWeek;
+                                        var daysToAdd = ((target - todayDow) + 7) % 7;
+                                        scheduledDate = today.AddDays(daysToAdd);
+                                    }
+                                    <span>@Model.DayOfWeek.Value.ToString()</span>
+                                    <span class="detail-subvalue">@scheduledDate.ToString("dddd, dd MMM yyyy")</span>
+                                }
+                                else
+                                {
+                                    <span>Not assigned</span>
+                                }
+                            }
+                        </span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value">
+                            <span class="status-badge @(Model.Status switch
+                                  {
+                                      "Completed" => "status-completed",
+                                      "Delayed" => "status-delayed",
+                                      "Cancelled" => "status-cancelled",
+                                      "In Progress" => "status-inprogress",
+                                      _ => "status-pending"
+                                  })">
+                                @Model.Status
+                            </span>
+                            @if (Model.Status == "Completed" && Model.DateOfCompletion.HasValue)
+                            {
+                                <span class="detail-subvalue">@Model.DateOfCompletion.Value.ToString("MMM d, yyyy h:mm tt")</span>
+                            }
+                        </span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">Inspector's Remarks</span>
+                        <span class="detail-value">@(string.IsNullOrEmpty((string)ViewBag.LatestRemark) ? "—" : ViewBag.LatestRemark)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sitios -->
+            <div class="details-card">
+                <div class="details-card-header">
+                    <i class="bi bi-geo-alt"></i> Sitio(s)
+                </div>
+                <div class="details-card-body">
+                    @if (Model.CollectionScheduleSitios == null || !Model.CollectionScheduleSitios.Any())
+                    {
+                        <span class="text-muted">No sitios assigned</span>
+                    }
+                    else
+                    {
+                        <div class="sitio-details-list">
+                            @foreach (var scheduleSitio in Model.CollectionScheduleSitios.OrderBy(cs => cs.Sitio?.SitioName))
+                            {
+                                var isReassigned = scheduleSitio.ReassignedToScheduleId != null;
+                                var displayStatus = isReassigned ? "Reassigned" : scheduleSitio.Status;
+                                <div class="sitio-detail-item">
+                                    <span class="status-badge @(displayStatus switch
+                                          {
+                                              "Completed" => "status-completed",
+                                              "Delayed" => "status-delayed",
+                                              "Reassigned" => "status-inprogress",
+                                              _ => "status-pending"
+                                          })">
+                                @displayStatus
+                            </span>
+                            <span class="sitio-name">@scheduleSitio.Sitio?.SitioName</span>
+                            @if (!isReassigned && scheduleSitio.Status == "Delayed" && !string.IsNullOrEmpty(scheduleSitio.ReasonForDelay))
+                                    {
+                                        <span class="reason-text">(@scheduleSitio.ReasonForDelay)</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Driver & Collectors -->
+            <div class="details-card">
+                <div class="details-card-header">
+                    <i class="bi bi-people"></i> Crew
+                </div>
+                <div class="details-card-body">
+                    <div class="detail-row">
+                        <span class="detail-label">Driver</span>
+                        <span class="detail-value">
+                            @(Model.Driver != null ? Model.Driver.FirstName + " " + Model.Driver.LastName : "N/A")
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Collector(s)</span>
+                        <span class="detail-value">
+                            @{
+                                var collectorNames = Model.CollectionScheduleCollectors?
+                                .Select(csc => csc.Collector?.FirstName + " " + csc.Collector?.LastName)
+                                .Where(n => !string.IsNullOrWhiteSpace(n))
+                                .ToList();
+                            }
+                            @(collectorNames != null && collectorNames.Any() ? string.Join(", ", collectorNames) : "N/A")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== RIGHT COLUMN ===== -->
+        <div class="details-column">
+
+            <!-- Truck Information -->
+            <div class="details-card">
+                <div class="details-card-header">
+                    <i class="bi bi-truck"></i> Truck Information
+                </div>
+                <div class="details-card-body">
+                    <div class="detail-row">
+                        <span class="detail-label">Garbage Truck</span>
+                        <span class="detail-value">
+                            @(Model.GarbageTruck != null
+                                                        ? (string.IsNullOrEmpty(Model.GarbageTruck.PlateNumber) ? Model.GarbageTruck.MVFileNumber : Model.GarbageTruck.PlateNumber)
+                                                        : "N/A")
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Dump Number</span>
+                        <span class="detail-value">
+                            <span class="dump-number">@Model.DumpNumber</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            @if (!string.IsNullOrEmpty(Model.Note))
+            {
+                <div class="details-card">
+                    <div class="details-card-header">
+                        <i class="bi bi-sticky"></i> Notes
+                    </div>
+                    <div class="details-card-body">
+                        <p class="notes-text">@Model.Note</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Carry Over -->
+            @{
+                var delayedSitios = ViewBag.DelayedSitios as List<TisaWasteManagement.Models.CollectionScheduleSitio>;
+                var carryOverDestinations = ViewBag.CarryOverDestinations as List<TisaWasteManagement.Models.CollectionSchedule>;
+            }
+            @if (delayedSitios != null && delayedSitios.Any())
+            {
+                <div class="details-card carry-over-card">
+                    <div class="details-card-header carry-over-header">
+                        <i class="bi bi-arrow-right-circle"></i> Carry Over Delayed Sitio(s)
+                    </div>
+                    <div class="details-card-body">
+                        @if (carryOverDestinations == null || !carryOverDestinations.Any())
+                        {
+                            <p class="text-muted">No other schedule is available (same day or next day) to carry these sitios over to yet.</p>
+                        }
+                        else
+                        {
+                            <form asp-controller="CollectionSchedule" asp-action="CarryOver" asp-route-id="@Model.CollectionScheduleId" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <label class="form-label">Select delayed sitio(s) to carry over:</label>
+                                <div class="carry-over-list">
+                                    @foreach (var cs in delayedSitios)
+                                    {
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="SelectedSitioIds"
+                                                   id="carryover_@cs.CollectionScheduleSitioId"
+                                                   value="@cs.CollectionScheduleSitioId" />
+                                            <label class="form-check-label" for="carryover_@cs.CollectionScheduleSitioId">
+                                                @cs.Sitio?.SitioName
+                                                @if (!string.IsNullOrEmpty(cs.ReasonForDelay))
+                                                {
+                                                    <span class="reason-text">(@cs.ReasonForDelay)</span>
+                                                }
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="DestinationScheduleId">Transfer To:</label>
+                                    <select class="form-select form-control-select" name="DestinationScheduleId" id="DestinationScheduleId" required>
+                                        <option value="">-- Select a destination schedule --</option>
+                                        @foreach (var dest in carryOverDestinations)
+                                        {
+                                            var destDate = WeeklyRecurrenceHelper.GetDisplayDate(dest);
+                                            var destDriver = dest.Driver != null ? dest.Driver.FirstName + " " + dest.Driver.LastName : "No Driver";
+                                            var destTruck = dest.GarbageTruck != null
+                                            ? (string.IsNullOrEmpty(dest.GarbageTruck.PlateNumber) ? dest.GarbageTruck.MVFileNumber : dest.GarbageTruck.PlateNumber)
+                                            : "No Truck";
+                                            <option value="@dest.CollectionScheduleId">
+                                                @destDate.ToString("dddd, dd MMM yyyy") - @destDriver - @destTruck
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-carry-over">
+                                    <i class="bi bi-arrow-right"></i> Carry Over Selected
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Update Status -->
+            <div class="details-card status-update-card">
+                <div class="details-card-header status-update-header">
+                    <i class="bi bi-arrow-repeat"></i> Update Collection Status
+                </div>
+                <div class="details-card-body">
+                    @{
+                        var allSitiosCollected = Model.CollectionScheduleSitios != null &&
+                        Model.CollectionScheduleSitios.Any() &&
+                        Model.CollectionScheduleSitios.All(cs => cs.Status == "Completed");
+                    }
+                    <form asp-controller="CollectionSchedule" asp-action="UpdateStatus" asp-route-id="@Model.CollectionScheduleId" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="status-update-row">
+                            <select name="status" class="form-select form-control-select">
+                                <option value="Pending" selected="@(Model.Status == "Pending")">Pending</option>
+                                <option value="Delayed" selected="@(Model.Status == "Delayed")" disabled="@allSitiosCollected">Delayed</option>
+                                <option value="Completed" selected="@(Model.Status == "Completed")" disabled="@(!allSitiosCollected)">Completed</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-update-status">
+                                <i class="bi bi-check-lg"></i> Update
+                            </button>
+                        </div>
+                    </form>
+                    @if (!allSitiosCollected)
+                    {
+                        <div class="form-hint">
+                            <i class="bi bi-info-circle"></i> All assigned sitios must be marked as collected before this schedule can be set to Completed.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-hint success-hint">
+                            <i class="bi bi-check-circle"></i> All assigned sitios are collected. This schedule can be marked as Completed.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="details-card history-card">
+                <div class="details-card-header history-header">
+                    <i class="bi bi-clock-history"></i> Status Update History
+                </div>
+                <div class="details-card-body">
+                    @{
+                        var history = ViewBag.MonitoringHistory as List<TisaWasteManagement.Models.CollectionMonitoring>;
+                    }
+                    @if (history == null || !history.Any())
+                    {
+                        <p class="text-muted">No status updates have been logged yet.</p>
+                    }
+                    else
+                    {
+                        <div class="history-list">
+                            @foreach (var log in history)
+                            {
+                                <div class="history-item">
+                                    <div class="history-date">@log.LogDate.ToString("MMM d, yyyy h:mm tt")</div>
+                                    <div class="history-details">
+                                        <span class="status-badge @(log.Status switch
+                                              {
+                                                  "Completed" => "status-completed",
+                                                  "Delayed" => "status-delayed",
+                                                  _ => "status-pending"
+                                              })">
+                                    @log.Status
+                                </span>
+                                <span class="history-sitios">@(string.IsNullOrEmpty(log.SitioNames) ? "—" : log.SitioNames)</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(log.Remarks) || !string.IsNullOrEmpty(log.ReasonForDelay))
+                                    {
+                                        <div class="history-extra">
+                                            @if (!string.IsNullOrEmpty(log.Remarks))
+                                            {
+                                                <span class="history-remark">📝 @log.Remarks</span>
+                                            }
+                                            @if (!string.IsNullOrEmpty(log.ReasonForDelay))
+                                            {
+                                                <span class="history-reason">⚠️ @log.ReasonForDelay</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

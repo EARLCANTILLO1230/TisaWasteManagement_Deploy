@@ -1,0 +1,166 @@
+﻿@model TisaWasteManagement.Models.ComplaintManagementViewModel
+
+@{
+    ViewData["Title"] = "Resolve Complaints";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ComplaintManagementStyles.css" />
+}
+
+<div class="complaint-management-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-tools"></i> Resolve Complaints
+            </h1>
+            <p class="page-subtitle">Manage and resolve resident complaints efficiently</p>
+        </div>
+    </div>
+
+    <!-- ===== STATISTICS ===== -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Total</span>
+            <span class="stat-value">@Model.Statistics.TotalCount</span>
+        </div>
+        <div class="stat-card stat-awaiting">
+            <span class="stat-label">Awaiting Review</span>
+            <span class="stat-value">@Model.Statistics.AwaitingReviewCount</span>
+        </div>
+        <div class="stat-card stat-ongoing">
+            <span class="stat-label">Ongoing</span>
+            <span class="stat-value">@Model.Statistics.OngoingCount</span>
+        </div>
+        <div class="stat-card stat-accomplished">
+            <span class="stat-label">Accomplished</span>
+            <span class="stat-value">@Model.Statistics.AccomplishedCount</span>
+        </div>
+    </div>
+
+    <!-- ===== SEARCH & FILTERS ===== -->
+    <div class="search-filter-container">
+        <form asp-action="Index" method="get">
+            <div class="search-filter-grid">
+                <!-- Search Input -->
+                <div class="filter-item search-item">
+                    <div class="input-group">
+                        <span class="input-group-icon"><i class="bi bi-search"></i></span>
+                        <input type="text"
+                               name="search"
+                               class="form-control search-input"
+                               placeholder="Search complaints by ticket, resident, or contact..."
+                               value="@Model.SearchKeyword" />
+                    </div>
+                </div>
+
+                <!-- Status Filter -->
+                <div class="filter-item">
+                    <select name="statusFilter" class="form-select filter-select" asp-items="ViewBag.StatusOptions">
+                        <option value="">All Status</option>
+                    </select>
+                </div>
+
+                <!-- Filter Button -->
+                <div class="filter-item">
+                    <button type="submit" class="btn btn-filter">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+
+                <!-- Clear Button -->
+                <div class="filter-item">
+                    <a asp-action="Index" class="btn btn-clear">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== COMPLAINT LIST ===== -->
+    <div class="table-container">
+        <div class="table-responsive">
+            @if (!Model.Complaints.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-inbox empty-icon"></i>
+                    <h4 class="empty-title">No complaints found</h4>
+                    <p class="empty-description">No complaints match your search criteria.</p>
+                </div>
+            }
+            else
+            {
+                <table class="table complaint-table">
+                    <thead>
+                        <tr>
+                            <th class="col-ticket">Ticket</th>
+                            <th class="col-resident">Resident</th>
+                            <th class="col-contact">Contact</th>
+                            <th class="col-type">Type</th>
+                            <th class="col-status">Status</th>
+                            <th class="col-date">Date</th>
+                            <th class="col-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var complaint in Model.Complaints)
+                        {
+                            <tr>
+                                <td class="col-ticket">
+                                    <span class="ticket-number">@complaint.TicketNumber</span>
+                                </td>
+                                <td class="col-resident">
+                                    @(string.IsNullOrEmpty(complaint.ResidentName) ? "Anonymous" : complaint.ResidentName)
+                                </td>
+                                <td class="col-contact">@complaint.ContactNumber</td>
+                                <td class="col-type">@complaint.ComplaintType</td>
+                                <td class="col-status">
+                                    <span class="status-badge @(complaint.Status == "Awaiting Review" ? "status-awaiting" : complaint.Status == "Ongoing" ? "status-ongoing" : complaint.Status == "Accomplished" ? "status-accomplished" : "status-pending")">
+                                        @complaint.Status
+                                    </span>
+                                </td>
+                                <td class="col-date">@complaint.FiledDate.ToString("MMM dd")</td>
+                                <td class="col-actions">
+                                    <div class="action-group">
+                                        <a asp-controller="ComplaintManagement"
+                                           asp-action="Resolve"
+                                           asp-route-id="@complaint.ComplaintId"
+                                           class="btn-action btn-resolve"
+                                           title="Resolve Complaint">
+                                            <i class="bi bi-check-circle"></i> Resolve
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+        <div class="table-footer">
+            <span>@Model.Complaints.Count complaint(s) found</span>
+        </div>
+    </div>
+
+</div>

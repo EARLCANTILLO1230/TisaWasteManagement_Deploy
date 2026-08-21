@@ -1,0 +1,61 @@
+@model TisaWasteManagement.Models.BulletinBoardImage
+
+@{
+    ViewData["Title"] = "Delete Bulletin Board Picture";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/AnnouncementandBulletinBoardStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title text-danger">
+                <i class="bi bi-exclamation-triangle"></i> Delete Bulletin Board Picture
+            </h1>
+            <p class="page-subtitle">This action cannot be undone</p>
+        </div>
+        <div class="page-actions">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== CONFIRMATION ===== -->
+    <div class="module-card">
+        <div class="module-card-body">
+            <p class="text-danger fw-bold">Are you sure you want to remove this picture from the Bulletin Board? This cannot be undone.</p>
+
+            <div class="delete-preview delete-bulletin">
+                <div class="delete-image">
+                    <img src="~/images/bulletinboard/@Model.ImageFileName" alt="@Model.Caption" />
+                </div>
+                <div class="delete-content">
+                    @if (!string.IsNullOrEmpty(Model.Caption))
+                    {
+                        <p>@Model.Caption</p>
+                    }
+                    <p class="text-muted small">Uploaded @Model.DateUploaded.ToString("MMM dd, yyyy")</p>
+                </div>
+            </div>
+
+            <form asp-action="BulletinBoardDelete" method="post">
+                <input type="hidden" asp-for="BulletinBoardImageId" />
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Yes, Delete
+                    </button>
+                    <a asp-action="Index" class="btn btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>

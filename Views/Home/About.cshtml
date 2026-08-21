@@ -1,0 +1,198 @@
+﻿@{
+    ViewData["Title"] = "About";
+    Layout = "_PublicLayout";
+}
+
+<section class="about-page">
+    <div class="about-container">
+
+        <!-- HEADER - centered -->
+        <div class="about-header">
+            <h1>About the System</h1>
+            <p>
+                The Barangay Tisa Waste Management System is a web platform
+                for managing collection schedules, monitoring daily pickups,
+                and handling resident complaints.
+            </p>
+        </div>
+
+        <!-- WHAT IT DOES -->
+        <div class="about-section">
+            <h2>What it does</h2>
+            <p>
+                The system helps residents check collection schedules, file
+                complaints, and track their status. For barangay staff, it
+                provides tools to manage schedules, monitor collections,
+                handle complaints, and generate reports.
+            </p>
+            <p>
+                This project was developed as a capstone requirement for the
+                Bachelor of Science in Information Technology program at
+                Asian College of Technology.
+            </p>
+        </div>
+
+        <!-- OBJECTIVES -->
+        <div class="about-section">
+            <h2>Objectives</h2>
+            <ul class="about-list">
+                <li>Provide residents with access to collection schedules and announcements</li>
+                <li>Allow residents to submit and track complaints online</li>
+                <li>Enable staff to monitor collection activities and update status</li>
+                <li>Generate reports on collection and complaint data</li>
+            </ul>
+        </div>
+
+        <!-- USERS -->
+        <div class="about-section">
+            <h2>Users</h2>
+            <div class="about-grid">
+                <div>
+                    <h3>Residents</h3>
+                    <p>View schedules, file complaints, track status</p>
+                </div>
+                <div>
+                    <h3>Inspectors</h3>
+                    <p>Monitor collections, verify sitio status</p>
+                </div>
+                <div>
+                    <h3>Administrators</h3>
+                    <p>Manage schedules, crews, complaints, reports</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- INSTITUTION -->
+        <div class="about-section">
+            <h2>Institution</h2>
+            <p>
+                <strong>School:</strong> Asian College of Technology<br />
+                <strong>Program:</strong> Bachelor of Science in Information Technology<br />
+                <strong>Project Type:</strong> Capstone Project
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .about-page {
+        background: #f8fafc;
+        padding: 40px 20px 60px;
+        min-height: 60vh;
+    }
+
+    .about-container {
+        max-width: 820px;
+        margin: 0 auto;
+        background: white;
+        padding: 40px 48px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .about-header {
+        text-align: center;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 28px;
+    }
+
+        .about-header h1 {
+            color: #1b5e20;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        .about-header p {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+    .about-section {
+        text-align: left;
+        margin-bottom: 28px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+        .about-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .about-section h2 {
+            color: #1b5e20;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+        }
+
+        .about-section p {
+            color: #475569;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin: 0 0 10px 0;
+        }
+
+            .about-section p:last-child {
+                margin-bottom: 0;
+            }
+
+    .about-list {
+        list-style: none;
+        padding: 0;
+        margin: 4px 0 0 0;
+        color: #475569;
+        font-size: 0.9rem;
+        line-height: 1.8;
+    }
+
+        .about-list li {
+            margin-bottom: 2px;
+        }
+
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 4px;
+    }
+
+        .about-grid h3 {
+            color: #1b5e20;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+
+        .about-grid p {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+    .about-section strong {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 768px) {
+        .about-container {
+            padding: 24px 20px;
+        }
+
+        .about-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .about-header h1 {
+            font-size: 1.3rem;
+        }
+    }
+</style>

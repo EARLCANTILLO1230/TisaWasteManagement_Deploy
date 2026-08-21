@@ -1,0 +1,121 @@
+﻿@model TisaWasteManagement.Models.Complaint
+
+@{
+    ViewData["Title"] = "Complaint Record Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/RecordsManagementStyles.css" />
+}
+
+<div class="records-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-file-text"></i> Complaint Record Details
+            </h1>
+            <p class="page-subtitle">View complaint information and status</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to Records
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== DETAILS CARD ===== -->
+    <div class="details-card">
+        <div class="details-card-header">
+            <i class="bi bi-exclamation-triangle"></i> Complaint Information
+        </div>
+        <div class="details-card-body">
+            <div class="details-grid-two">
+                <!-- Left Column -->
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Ticket Number</span>
+                        <span class="detail-value">
+                            <span class="ticket-number">@Model.TicketNumber</span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Resident Name</span>
+                        <span class="detail-value">@Model.ResidentName</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact Number</span>
+                        <span class="detail-value">@Model.ContactNumber</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Sitio</span>
+                        <span class="detail-value">@(Model.Sitio?.SitioName ?? "N/A")</span>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Complaint Type</span>
+                        <span class="detail-value">@Model.ComplaintType</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value">
+                            <span class="status-badge @(Model.Status == "Accomplished" ? "status-accomplished" : Model.Status == "Ongoing" ? "status-ongoing" : Model.Status == "Urgent" ? "status-urgent" : "status-pending")">
+                                @Model.StatusDisplayName
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date Submitted</span>
+                        <span class="detail-value">@Model.FiledDate.ToString("MMMM dd, yyyy h:mm tt")</span>
+                    </div>
+                    @if (Model.UpdatedDate.HasValue)
+                    {
+                        <div class="detail-row">
+                            <span class="detail-label">Last Updated</span>
+                            <span class="detail-value">@Model.UpdatedDate.Value.ToString("MMMM dd, yyyy h:mm tt")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Details and Image -->
+            <div class="detail-row full-width">
+                <span class="detail-label">Details</span>
+                <span class="detail-value detail-text">@Model.Details</span>
+            </div>
+
+            @if (Model.HasImage)
+            {
+                <div class="image-attachment">
+                    <span class="image-label"><i class="bi bi-image"></i> Attached Photo</span>
+                    <button type="button" class="btn btn-preview-image" data-bs-toggle="modal" data-bs-target="#imagePreviewModal">
+                        <i class="bi bi-eye"></i> Preview Image
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== IMAGE MODAL ===== -->
+@if (Model.HasImage)
+{
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagePreviewModalLabel">Attached Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="@Model.ImageFileName" alt="Complaint photo" class="img-fluid rounded" />
+                </div>
+            </div>
+        </div>
+    </div>
+}

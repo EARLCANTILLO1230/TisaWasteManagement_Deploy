@@ -1,0 +1,536 @@
+/* =========================================================
+   Account Management views - stylesheet
+   -----------------------------------------------------------
+   These are the CSS rules used by the combined Account
+   Management pages (Index / Create / Edit / ChangePassword),
+   which manage both Admin and Inspector staff accounts.
+   This file was renamed from InspectorAccountStyles.css when
+   the Admin Account and Inspector Account modules were merged
+   into one "Account Management" module - the rules themselves
+   are unchanged, plus a few new ones at the bottom for the
+   Admin/Inspector type tabs and badges.
+   ========================================================= */
+
+:root {
+    --tisa-green: #1B5E20;
+    --tisa-green-dark: #124717;
+    --tisa-green-light: #eaf4eb;
+    --text-dark: #0f1a12;
+    --text-medium: #475569;
+    --text-light: #64748b;
+    --border: #e8ecf0;
+    --background: #f8fafc;
+    --white: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+    --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+.module-page {
+    padding: 0;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin: 4px 0 0;
+}
+
+.page-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--tisa-green);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: var(--tisa-green-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    background: #f1f5f9;
+    color: var(--text-medium);
+    border: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #e2e8f0;
+    color: var(--text-dark);
+    text-decoration: none;
+}
+
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: #e8f0fe;
+    color: #1a56db;
+    border: 1px solid #dbeafe;
+    cursor: pointer;
+    min-width: 60px;
+}
+
+.btn-edit:hover {
+    background: #dbeafe;
+    color: #1a56db;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.btn-edit i {
+    font-size: 0.85rem;
+}
+
+.alert-success-custom {
+    background: #eaf4eb;
+    border-left: 4px solid var(--tisa-green);
+    color: var(--tisa-green-dark);
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.alert-success-custom i {
+    font-size: 1.2rem;
+}
+
+.alert-danger-custom {
+    background: #fee2e2;
+    border-left: 4px solid #dc2626;
+    color: #991b1b;
+    padding: 12px 18px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.alert-danger-custom i {
+    font-size: 1.2rem;
+}
+
+.table-scroll {
+    max-height: 540px;
+    /* ~13 rows (40px per row) */
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.table-scroll thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-scroll thead th {
+    background: #f8fafc;
+    border-bottom: 2px solid var(--border);
+}
+
+.table-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.table-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.module-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.module-table thead {
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
+}
+
+.module-table thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-medium);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.module-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s ease;
+}
+
+.module-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.module-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.module-table tbody td {
+    padding: 8px 16px;
+    color: var(--text-dark);
+    vertical-align: middle;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.form-label .required {
+    color: #dc2626;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background: white;
+    color: var(--text-dark);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--tisa-green);
+    box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1);
+}
+
+.form-text {
+    display: block;
+    color: var(--text-light);
+    font-size: 0.78rem;
+    margin-top: 4px;
+}
+
+.text-danger {
+    color: #dc2626 !important;
+    font-size: 0.8rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.module-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.module-card-header {
+    padding: 12px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.module-card-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.module-card-body {
+    padding: 20px 24px;
+}
+
+@media (max-width: 768px) {
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-title {
+        font-size: 1.3rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .table-scroll {
+        max-height: 350px;
+    }
+
+    .module-table thead th,
+    .module-table tbody td {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+    }
+
+    .btn-view,
+    .btn-edit,
+    .btn-delete {
+        padding: 4px 12px;
+        font-size: 0.72rem;
+        min-width: 50px;
+    }
+
+    .module-card-body {
+        padding: 16px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .module-table thead th,
+    .module-table tbody td {
+        padding: 5px 8px;
+        font-size: 0.72rem;
+    }
+
+    .btn-view,
+    .btn-edit,
+    .btn-delete {
+        padding: 3px 8px;
+        font-size: 0.68rem;
+        min-width: 40px;
+    }
+
+    .btn-primary {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .page-actions {
+        width: 100%;
+    }
+
+    .table-scroll {
+        max-height: 280px;
+    }
+
+}
+
+.btn-change-password {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    cursor: pointer;
+    min-width: 60px;
+}
+
+.btn-change-password:hover {
+    background: #fde68a;
+    color: #92400e;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.btn-change-password i {
+    font-size: 0.85rem;
+}
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.action-buttons .btn-edit,
+    .action-buttons .btn-view,
+    .action-buttons .btn-delete,
+    .action-buttons .btn-change-password {
+    white-space: nowrap;
+}
+
+.btn-change-password {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    cursor: pointer;
+    min-width: 60px;
+    white-space: nowrap;
+}
+
+.required {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+
+    .form-row .form-group {
+        margin-bottom: 14px;
+    }
+
+    .form-row .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .module-card-body {
+        padding: 16px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+}
+
+/* ---------------------------------------------------------
+   Small "Admin" / "Inspector" badge shown in the Type
+   column of the combined account list.
+   --------------------------------------------------------- */
+
+.type-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.type-badge-admin {
+    background: #fde68a;
+    color: #92400e;
+}
+
+.type-badge-inspector {
+    background: #dbeafe;
+    color: #1a56db;
+}

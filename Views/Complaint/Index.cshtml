@@ -1,0 +1,220 @@
+﻿@model TisaWasteManagement.Models.Complaint
+
+@{
+    ViewData["Title"] = "File a Complaint";
+    Layout = "_PublicLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ComplaintStyles.css" />
+}
+
+<div class="resident-complaint-page">
+    <div class="resident-complaint-container">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="complaint-public-header">
+            <h1>
+                <i class="bi bi-megaphone"></i> File a Complaint
+            </h1>
+            <p>
+                Submit your concerns or report issues related to waste management.
+                We'll address your complaint promptly and keep you updated.
+            </p>
+        </div>
+
+        <!-- ===== COMPLAINT FORM ===== -->
+        <div class="complaint-form-card">
+            <form asp-action="Index" method="post" enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <!-- ===== ALERT MESSAGES ===== -->
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- ===== FORM GRID ===== -->
+                <div class="complaint-form-grid">
+
+                    <!-- Left Column -->
+                    <div class="complaint-form-column">
+
+                        <div class="complaint-form-group">
+                            <label asp-for="ResidentName" class="complaint-form-label">
+                                Full Name <span class="text-muted">(Optional)</span>
+                            </label>
+                            <input asp-for="ResidentName" class="complaint-form-control" placeholder="Enter your name (optional)" />
+                            <span asp-validation-for="ResidentName" class="text-danger"></span>
+                        </div>
+
+                        <div class="complaint-form-group">
+                            <label asp-for="ContactNumber" class="complaint-form-label">
+                                Contact Number <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="ContactNumber" class="complaint-form-control" placeholder="09*********" />
+                            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="complaint-form-group">
+                            <label asp-for="SitioId" class="complaint-form-label">
+                                Location <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="SitioId" class="complaint-form-control" asp-items="ViewBag.SitioId">
+                                <option value="">Select Location</option>
+                            </select>
+                            <span asp-validation-for="SitioId" class="text-danger"></span>
+                        </div>
+
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="complaint-form-column">
+
+                        <div class="complaint-form-group">
+                            <label asp-for="ComplaintType" class="complaint-form-label">
+                                Complaint Type <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="ComplaintType" class="complaint-form-control" asp-items="ViewBag.ComplaintTypes">
+                                <option value="">Select Type</option>
+                            </select>
+                            <span asp-validation-for="ComplaintType" class="text-danger"></span>
+                        </div>
+
+                        <div class="complaint-form-group">
+                            <label asp-for="Details" class="complaint-form-label">
+                                Details <span class="text-danger">*</span>
+                            </label>
+                            <textarea asp-for="Details" class="complaint-form-control complaint-textarea" rows="4" placeholder="Describe your complaint in detail..."></textarea>
+                            <span asp-validation-for="Details" class="text-danger"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ===== IMAGE UPLOAD ===== -->
+                <div class="complaint-form-group image-upload-group">
+                    <label for="ImageFile" class="complaint-form-label">
+                        Attach a Photo <span class="text-danger">*</span>
+                    </label>
+                    <div class="image-upload-wrapper">
+                        <input type="file"
+                               name="ImageFile"
+                               id="ImageFile"
+                               class="file-input"
+                               accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+                               onchange="validateImageSize(this)"
+                               required />
+                        <div class="file-input-label">
+                            <i class="bi bi-cloud-upload"></i>
+                            <span>Choose an image</span>
+                            <small>PNG, JPG, or JPEG. Max size: 5MB</small>
+                        </div>
+                    </div>
+                    @Html.ValidationMessage("ImageFile", "", new { @class = "text-danger" })
+                    <span id="imageFileError" class="text-danger d-block"></span>
+
+                    <!-- Image Preview -->
+                    <div id="imagePreviewWrapper" class="image-preview-wrapper d-none">
+                        <img id="imagePreview" src="#" alt="Image preview" />
+                        <button type="button" class="remove-image-btn" onclick="removeImage()">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                    </div>
+                    <div class="form-hint">
+                        <i class="bi bi-info-circle"></i> Please attach a photo of the issue for reference.
+                    </div>
+                </div>
+
+                <!-- ===== FORM ACTIONS ===== -->
+                <div class="complaint-form-actions">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="bi bi-send"></i> Submit Complaint
+                    </button>
+                    <a asp-action="Track" class="btn btn-track">
+                        <i class="bi bi-search"></i> Track Your Complaint
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-cancel-action">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+        const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png'];
+
+        function validateImageSize(input) {
+            const errorEl = document.getElementById('imageFileError');
+            const previewWrapper = document.getElementById('imagePreviewWrapper');
+            const previewImg = document.getElementById('imagePreview');
+
+            errorEl.textContent = '';
+            previewWrapper.classList.add('d-none');
+            previewImg.src = '#';
+
+            if (!input.files || input.files.length === 0) {
+                return;
+            }
+
+            const file = input.files[0];
+            const extension = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (!ALLOWED_EXTENSIONS.includes(extension)) {
+                errorEl.textContent = 'Only PNG, JPG, or JPEG images are allowed.';
+                input.value = '';
+                return;
+            }
+
+            if (file.size > MAX_IMAGE_SIZE_BYTES) {
+                errorEl.textContent = 'Image size must not exceed 5MB.';
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImg.src = e.target.result;
+                previewWrapper.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            const input = document.getElementById('ImageFile');
+            const previewWrapper = document.getElementById('imagePreviewWrapper');
+            const previewImg = document.getElementById('imagePreview');
+            const errorEl = document.getElementById('imageFileError');
+
+            input.value = '';
+            previewWrapper.classList.add('d-none');
+            previewImg.src = '#';
+            errorEl.textContent = '';
+        }
+
+        document.querySelector('.file-input')?.addEventListener('change', function() {
+            const label = this.closest('.image-upload-wrapper').querySelector('.file-input-label span');
+            if (this.files && this.files.length > 0) {
+                label.textContent = this.files[0].name;
+            } else {
+                label.textContent = 'Choose an image';
+            }
+        });
+    </script>
+}

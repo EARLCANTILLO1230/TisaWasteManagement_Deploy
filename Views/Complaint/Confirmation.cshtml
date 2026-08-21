@@ -1,0 +1,149 @@
+﻿@model TisaWasteManagement.Models.Complaint
+
+@{
+    ViewData["Title"] = "Complaint Submitted";
+    Layout = "_PublicLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ComplaintStyles.css" />
+}
+
+<div class="resident-complaint-page">
+    <div class="resident-complaint-container submitted-container">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="complaint-public-header submitted-header">
+            <span class="complaint-public-label">
+                <i class="bi bi-check-circle"></i> SUCCESS
+            </span>
+            <h1>
+                <i class="bi bi-check-circle-fill text-success"></i> Complaint Submitted!
+            </h1>
+            <p>
+                Your complaint has been received and is now being reviewed.
+            </p>
+        </div>
+
+        <!-- ===== SUCCESS CARD ===== -->
+        <div class="complaint-form-card submitted-card">
+
+            <!-- ===== SUCCESS BANNER ===== -->
+            <div class="submitted-success-banner">
+                <i class="bi bi-check-circle-fill"></i>
+                <h4>Thank you for your report!</h4>
+                <p>We will review your complaint and take appropriate action.</p>
+            </div>
+
+            <!-- ===== TICKET NUMBER ===== -->
+            <div class="ticket-card">
+                <div class="ticket-card-header">
+                    <i class="bi bi-ticket"></i> Your Ticket Number
+                </div>
+                <div class="ticket-card-body">
+                    <div class="ticket-number-display">@Model.TicketNumber</div>
+                    <p class="ticket-hint">Save this number to track your complaint</p>
+                </div>
+            </div>
+
+            <!-- ===== SUMMARY ===== -->
+            <div class="summary-card">
+                <div class="summary-card-header">
+                    <i class="bi bi-list-ul"></i> Summary
+                </div>
+                <div class="summary-card-body">
+                    <div class="summary-row">
+                        <span class="summary-label">Name</span>
+                        <span class="summary-value">@Model.ResidentName</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Contact</span>
+                        <span class="summary-value">@Model.ContactNumber</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Location</span>
+                        <span class="summary-value">@(Model.Sitio?.SitioName ?? "N/A")</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Type</span>
+                        <span class="summary-value">@Model.ComplaintType</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Status</span>
+                        <span class="summary-value">
+                            <span class="status-badge status-pending">@Model.StatusDisplayName</span>
+                        </span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Date</span>
+                        <span class="summary-value">@Model.FiledDate.ToString("MMMM dd, yyyy hh:mm tt")</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Details))
+                    {
+                        <div class="summary-row">
+                            <span class="summary-label">Details</span>
+                            <span class="summary-value summary-details">@Model.Details</span>
+                        </div>
+                    }
+                    @if (Model.HasImage)
+                    {
+                        <div class="summary-row">
+                            <span class="summary-label">Attached Photo</span>
+                            <span class="summary-value">
+                                <button type="button" class="btn btn-preview-image" data-bs-toggle="modal" data-bs-target="#imagePreviewModal">
+                                    <i class="bi bi-eye"></i> Preview Image
+                                </button>
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ===== NEXT STEPS ===== -->
+            <div class="next-steps-card">
+                <div class="next-steps-header">
+                    <i class="bi bi-arrow-right-circle"></i> What's Next?
+                </div>
+                <div class="next-steps-body">
+                    <ul>
+                        <li><i class="bi bi-check-circle"></i> We will review your complaint</li>
+                        <li><i class="bi bi-check-circle"></i> Updates will be sent to your contact number</li>
+                        <li><i class="bi bi-check-circle"></i> Track status anytime with your ticket number</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ===== ACTIONS ===== -->
+            <div class="submitted-actions">
+                <a asp-action="Track" class="btn btn-track-complaint">
+                    <i class="bi bi-search"></i> Track Complaint
+                </a>
+                <a asp-action="Index" class="btn btn-submit">
+                    <i class="bi bi-plus-circle"></i> File Another
+                </a>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-cancel-action">
+                    <i class="bi bi-house"></i> Home
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== IMAGE MODAL ===== -->
+@if (Model.HasImage)
+{
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imagePreviewModalLabel">Attached Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="@Model.ImageUrl" alt="Complaint photo" class="img-fluid rounded" />
+                </div>
+            </div>
+        </div>
+    </div>
+}

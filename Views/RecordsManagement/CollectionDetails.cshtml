@@ -1,0 +1,232 @@
+﻿@model TisaWasteManagement.Models.CollectionSchedule
+
+@{
+    ViewData["Title"] = "Collection Record Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/RecordsManagementStyles.css" />
+}
+
+<div class="records-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-calendar-check"></i> Collection Record Details
+            </h1>
+            <p class="page-subtitle">View collection schedule information and monitoring history</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Index" class="btn btn-cancel">
+                <i class="bi bi-arrow-left"></i> Back to Records
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== SCHEDULE INFORMATION ===== -->
+    <div class="details-card">
+        <div class="details-card-header">
+            <i class="bi bi-calendar-check"></i> Schedule Information
+        </div>
+        <div class="details-card-body">
+            <div class="details-grid-two">
+                <!-- Left Column -->
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Collection Day</span>
+                        <span class="detail-value">
+                            @if (Model.DayOfWeek.HasValue)
+                            {
+                                <div>
+                                    <span>@Model.DayOfWeek.Value.ToString()</span>
+                                    <span class="detail-subvalue">@TisaWasteManagement.Helpers.WeeklyRecurrenceHelper.GetDisplayDate(Model).ToString("dddd, dd MMM yyyy")</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <span>Not assigned</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Driver</span>
+                        <span class="detail-value">
+                            @if (Model.Driver != null)
+                            {
+                                @(Model.Driver.FirstName + " " + Model.Driver.LastName)
+                            }
+                            else
+                            {
+                                <span class="text-muted">N/A</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Garbage Truck</span>
+                        <span class="detail-value">
+                            @if (Model.GarbageTruck != null)
+                            {
+                                @(string.IsNullOrEmpty(Model.GarbageTruck.PlateNumber) ? Model.GarbageTruck.MVFileNumber : Model.GarbageTruck.PlateNumber)
+                            }
+                            else
+                            {
+                                <span class="text-muted">N/A</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Collector(s)</span>
+                        <span class="detail-value">
+                            @{
+                                var collectorNames = Model.CollectionScheduleCollectors?
+                                .Select(csc => csc.Collector?.FirstName + " " + csc.Collector?.LastName)
+                                .Where(n => !string.IsNullOrWhiteSpace(n))
+                                .ToList();
+                            }
+                            @if (collectorNames != null && collectorNames.Any())
+                            {
+                                @string.Join(", ", collectorNames)
+                            }
+                            else
+                            {
+                                <span class="text-muted">N/A</span>
+                            }
+                        </span>
+                    </div>
+                </div>
+                <!-- Right Column -->
+                <div>
+                    <div class="detail-row">
+                        <span class="detail-label">Dump Number</span>
+                        <span class="detail-value">
+                            <span class="dump-number">@Model.DumpNumber</span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Repeat Weekly</span>
+                        <span class="detail-value">
+                            @if (Model.RepeatWeekly)
+                            {
+                                <span class="badge-status badge-active">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge-status badge-inactive">No</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Current Status</span>
+                        <span class="detail-value">
+                            <span class="status-badge @(Model.Status == "Completed" ? "status-completed" : Model.Status == "Delayed" ? "status-delayed" : Model.Status == "In Progress" ? "status-inprogress" : "status-pending")">
+                                @Model.Status
+                            </span>
+                            @if (Model.Status == "Completed" && Model.DateOfCompletion.HasValue)
+                            {
+                                <span class="detail-subvalue">Completed: @Model.DateOfCompletion.Value.ToString("MMM d, yyyy h:mm tt")</span>
+                            }
+                        </span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Note))
+                    {
+                        <div class="detail-row">
+                            <span class="detail-label">Admin Notes</span>
+                            <span class="detail-value">@Model.Note</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SITIOS ===== -->
+    <div class="details-card">
+        <div class="details-card-header">
+            <i class="bi bi-geo-alt"></i> Sitio(s)
+        </div>
+        <div class="details-card-body">
+            @if (Model.CollectionScheduleSitios != null && Model.CollectionScheduleSitios.Any())
+            {
+                <div class="sitio-list">
+                    @foreach (var scheduleSitio in Model.CollectionScheduleSitios.OrderBy(cs => cs.Sitio?.SitioName))
+                    {
+                        var isReassigned = scheduleSitio.ReassignedToScheduleId != null;
+                        var displayStatus = isReassigned ? "Reassigned" : scheduleSitio.Status;
+                        <div class="sitio-item">
+                            <span class="status-badge @(displayStatus == "Completed" ? "status-completed" : displayStatus == "Delayed" ? "status-delayed" : displayStatus == "Reassigned" ? "status-inprogress" : "status-pending")">
+                                @displayStatus
+                            </span>
+                            <span class="sitio-name">@scheduleSitio.Sitio?.SitioName</span>
+                            @if (!isReassigned && scheduleSitio.Status == "Delayed" && !string.IsNullOrEmpty(scheduleSitio.ReasonForDelay))
+                            {
+                                <span class="reason-text">— @scheduleSitio.ReasonForDelay</span>
+                            }
+                            @if (isReassigned)
+                            {
+                                <span class="reassigned-text">(Carried over to another schedule)</span>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No sitios assigned to this schedule.</p>
+            }
+        </div>
+    </div>
+
+    <!-- ===== MONITORING HISTORY ===== -->
+    <div class="details-card history-card">
+        <div class="details-card-header history-header">
+            <i class="bi bi-clock-history"></i> Status Update History
+        </div>
+        <div class="details-card-body">
+            @{
+                var history = ViewBag.MonitoringHistory as List<TisaWasteManagement.Models.CollectionMonitoring>;
+            }
+            @if (history == null || !history.Any())
+            {
+                <p class="text-muted">No monitoring history found for this schedule.</p>
+            }
+            else
+            {
+                <div class="history-list">
+                    @foreach (var log in history)
+                    {
+                        <div class="history-item">
+                            <div class="history-date">@log.LogDate.ToString("MMM d, yyyy h:mm tt")</div>
+                            <div class="history-details">
+                                <span class="status-badge @(log.Status == "Completed" ? "status-completed" : log.Status == "Delayed" ? "status-delayed" : "status-pending")">
+                                    @log.Status
+                                </span>
+                                <span class="history-sitios">@(string.IsNullOrEmpty(log.SitioNames) ? "—" : log.SitioNames)</span>
+                            </div>
+                            @if (!string.IsNullOrEmpty(log.Remarks) || !string.IsNullOrEmpty(log.ReasonForDelay) || !string.IsNullOrEmpty(log.Notes))
+                            {
+                                <div class="history-extra">
+                                    @if (!string.IsNullOrEmpty(log.Remarks))
+                                    {
+                                        <span class="history-remark">Remarks: @log.Remarks</span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(log.ReasonForDelay))
+                                    {
+                                        <span class="history-reason">Reason: @log.ReasonForDelay</span>
+                                    }
+                                    @if (!string.IsNullOrEmpty(log.Notes))
+                                    {
+                                        <span class="history-note">Notes: @log.Notes</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+</div>

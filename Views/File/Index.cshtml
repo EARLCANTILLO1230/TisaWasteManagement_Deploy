@@ -1,0 +1,174 @@
+@model IEnumerable<TisaWasteManagement.Models.ReportFile>
+
+@{
+    ViewData["Title"] = "File Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/FileStyles.css" />
+}
+
+<div class="file-management-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-folder"></i> File Management
+            </h1>
+            <p class="page-subtitle">Upload, store, and manage documents and reports</p>
+        </div>
+        <div class="page-header-right">
+            <a asp-action="Upload" class="btn btn-primary">
+                <i class="bi bi-cloud-upload"></i> Upload File
+            </a>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== SEARCH & FILTERS ===== -->
+    <div class="search-filter-container">
+        <form method="get">
+            <div class="search-filter-grid">
+                <!-- Search Input -->
+                <div class="filter-item search-item">
+                    <div class="input-group">
+                        <span class="input-group-icon"><i class="bi bi-search"></i></span>
+                        <input type="text"
+                               name="search"
+                               class="form-control search-input"
+                               placeholder="Search by file name or description..."
+                               value="@ViewBag.Search" />
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="filter-item">
+                    <select name="categoryFilter" class="form-select filter-select">
+                        <option value="All" selected="@(ViewBag.CategoryFilter == null || ViewBag.CategoryFilter == "All")">All Categories</option>
+                        <option value="General" selected="@(ViewBag.CategoryFilter == "General")">General</option>
+                        <option value="Report" selected="@(ViewBag.CategoryFilter == "Report")">Report</option>
+                        <option value="Guideline" selected="@(ViewBag.CategoryFilter == "Guideline")">Guideline</option>
+                        <option value="Resolution" selected="@(ViewBag.CategoryFilter == "Resolution")">Resolution</option>
+                    </select>
+                </div>
+
+                <!-- Filter Button -->
+                <div class="filter-item">
+                    <button type="submit" class="btn btn-filter">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+
+                <!-- Clear Button -->
+                <div class="filter-item">
+                    <a asp-action="Index" class="btn btn-clear">
+                        <i class="bi bi-x-circle"></i> Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ===== FILE LIST ===== -->
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-folder empty-icon"></i>
+            <h4 class="empty-title">No files uploaded yet</h4>
+            <p class="empty-description">Upload your first file to get started.</p>
+            <a asp-action="Upload" class="btn btn-primary btn-empty-action">
+                <i class="bi bi-cloud-upload"></i> Upload First File
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="file-table">
+                    <thead>
+                        <tr>
+                            <th class="col-filename">File Name</th>
+                            <th class="col-category">Category</th>
+                            <th class="col-type">Type</th>
+                            <th class="col-size">Size</th>
+                            <th class="col-uploadedby">Uploaded By</th>
+                            <th class="col-uploaddate">Upload Date</th>
+                            <th class="col-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="col-filename">
+                                    <div class="file-info">
+                                        <span class="file-name">
+                                            <i class="bi @(item.FileType == "pdf" ? "bi-file-pdf" :
+                                                                                                      item.FileType == "xlsx" || item.FileType == "xls" ? "bi-file-excel" :
+                                                                                                      item.FileType == "docx" || item.FileType == "doc" ? "bi-file-word" :
+                                                                                                      "bi-file-earmark")"></i>
+                                    @item.FileName
+                                </span>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                        {
+                                            <span class="file-description">@item.Description</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="col-category">
+                                    <span class="category-badge @(item.Category == "General" ? "badge-general" :
+                                                                                                          item.Category == "Report" ? "badge-report" :
+                                                                                                          item.Category == "Guideline" ? "badge-guideline" :
+                                                                                                          item.Category == "Resolution" ? "badge-resolution" : "badge-general")">
+                                @item.Category
+                            </span>
+                        </td>
+                        <td class="col-type">
+                            <span class="file-type">@item.FileType.ToUpper()</span>
+                        </td>
+                        <td class="col-size">
+                            @(item.FileSize > 1024 ? $"{item.FileSize / 1024.0:F1} MB" : $"{item.FileSize} KB")
+                        </td>
+                        <td class="col-uploadedby">@item.UploadedBy</td>
+                        <td class="col-uploaddate">@item.UploadDate.ToString("MMM d, yyyy h:mm tt")</td>
+                        <td class="col-actions">
+                            <div class="action-group">
+                                <a asp-action="Download" asp-route-id="@item.ReportFileId" class="btn-action btn-download" title="Download">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.ReportFileId" class="btn-action btn-delete" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-footer">
+                <span>@Model.Count() file(s) found</span>
+            </div>
+        </div>
+    }
+
+</div>

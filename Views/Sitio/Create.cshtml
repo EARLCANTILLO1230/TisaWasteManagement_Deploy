@@ -1,0 +1,69 @@
+@model TisaWasteManagement.Models.Sitio
+
+@{
+    ViewData["Title"] = "Create Sitio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/SitioStyles.css" />
+}
+
+<div class="module-page">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Create Sitio</h1>
+            <p class="page-subtitle">Add a new sitio or zone to the barangay</p>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-danger-custom">
+            <i class="bi bi-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- Form -->
+    <div class="module-card">
+        <div class="module-card-header">
+            <h4><i class="bi bi-geo-alt"></i> Sitio Information</h4>
+        </div>
+        <div class="module-card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert-danger-custom" style="margin-bottom: 16px;"></div>
+
+                <div class="form-group">
+                    <label asp-for="SitioName" class="form-label">
+                        Sitio Name <span class="required">*</span>
+                    </label>
+                    <input asp-for="SitioName" class="form-control" placeholder="Enter sitio name..." />
+                    <span asp-validation-for="SitioName" class="text-danger" style="font-size: 0.8rem;"></span>
+                    <span class="form-text">Example: Purok 1, Riverside, Sitio San Jose</span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-check-lg"></i> Save
+                    </button>
+                    <a asp-action="Index" class="btn-cancel">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

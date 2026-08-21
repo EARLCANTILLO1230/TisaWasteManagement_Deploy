@@ -1,0 +1,385 @@
+﻿@model TisaWasteManagement.Models.RecordsManagementViewModel
+
+@{
+    ViewData["Title"] = "Records Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/RecordsManagementStyles.css" />
+}
+
+<div class="records-page">
+
+    <!-- ===== PAGE HEADER ===== -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <h1 class="page-title">
+                <i class="bi bi-archive"></i> Records Management
+            </h1>
+            <p class="page-subtitle">Centralized repository for historical waste management records</p>
+        </div>
+    </div>
+
+    <!-- ===== ALERT MESSAGES ===== -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- ===== STATISTICS CARDS ===== -->
+    <div class="stats-grid">
+        <div class="stat-card collection-card" onclick="switchTab('collection-tab')">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <span class="stat-number">@Model.CollectionCount</span>
+                    <span class="stat-label">Collection History</span>
+                    <span class="stat-description">Completed or delayed collection activities</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">
+                <button class="btn btn-stat-view">View Collection History</button>
+            </div>
+        </div>
+
+        <div class="stat-card complaint-card" onclick="switchTab('complaint-tab')">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <span class="stat-number">@Model.ComplaintCount</span>
+                    <span class="stat-label">Complaint Archive</span>
+                    <span class="stat-description">Submitted complaints and their status</span>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+            </div>
+            <div class="stat-card-footer">
+                <button class="btn btn-stat-view btn-stat-complaint">View Complaint Archive</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TABS ===== -->
+    <ul class="nav nav-tabs records-tabs" id="recordsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="collection-tab" data-bs-toggle="tab" data-bs-target="#collectionRecords" type="button" role="tab">
+                <i class="bi bi-calendar-check"></i> Collection History
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="complaint-tab" data-bs-toggle="tab" data-bs-target="#complaintRecords" type="button" role="tab">
+                <i class="bi bi-exclamation-triangle"></i> Complaint Archive
+            </button>
+        </li>
+    </ul>
+
+    <!-- ===== TAB CONTENT ===== -->
+    <div class="tab-content">
+
+        <!-- ===== COLLECTION RECORDS TAB ===== -->
+        <div class="tab-pane fade show active" id="collectionRecords" role="tabpanel">
+            <div class="records-card">
+                <div class="records-card-body">
+
+                    <!-- Search and Filter -->
+                    <form method="get" class="search-filter-form">
+                        <div class="search-filter-grid">
+                            <div class="filter-item search-item">
+                                <div class="input-group">
+                                    <span class="input-group-icon"><i class="bi bi-search"></i></span>
+                                    <input type="text"
+                                           name="collectionSearch"
+                                           class="form-control search-input"
+                                           placeholder="Search driver, collector, truck, or sitio..."
+                                           value="@ViewBag.CollectionSearch" />
+                                </div>
+                            </div>
+
+                            <div class="filter-item">
+                                <select name="collectionStatus" class="form-select filter-select">
+                                    <option value="">All Status</option>
+                                    <option value="Completed" selected="@(ViewBag.CollectionStatus == "Completed")">Completed</option>
+                                    <option value="Delayed" selected="@(ViewBag.CollectionStatus == "Delayed")">Delayed</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-item date-range-item">
+                                <div class="date-range-group">
+                                    <input type="date"
+                                           name="collectionStartDate"
+                                           class="form-control date-input"
+                                           value="@(ViewBag.CollectionStartDate?.ToString("yyyy-MM-dd"))"
+                                           placeholder="From" />
+                                    <span class="date-separator">to</span>
+                                    <input type="date"
+                                           name="collectionEndDate"
+                                           class="form-control date-input"
+                                           value="@(ViewBag.CollectionEndDate?.ToString("yyyy-MM-dd"))"
+                                           placeholder="To" />
+                                </div>
+                            </div>
+
+                            <div class="filter-item">
+                                <button type="submit" class="btn btn-filter">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </div>
+
+                            <div class="filter-item">
+                                <a asp-action="Index" class="btn btn-clear">
+                                    <i class="bi bi-x-circle"></i> Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Collection Records Table -->
+                    @if (!Model.CollectionRecords.Any())
+                    {
+                        <div class="empty-state">
+                            <i class="bi bi-calendar-x empty-icon"></i>
+                            <h4 class="empty-title">No collection history found</h4>
+                            <p class="empty-description">Only completed or delayed schedules appear in Collection History.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table records-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-day">Day &amp; Date</th>
+                                            <th class="col-driver">Driver</th>
+                                            <th class="col-truck">Truck</th>
+                                            <th class="col-status">Status</th>
+                                            <th class="col-created">Date Created</th>
+                                            <th class="col-actions">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var schedule in Model.CollectionRecords)
+                                        {
+                                            <tr>
+                                                <td class="col-day">
+                                                    @if (schedule.DayOfWeek.HasValue)
+                                                    {
+                                                        <div class="day-info">
+                                                            <span class="day-name">@schedule.DayOfWeek.Value.ToString()</span>
+                                                            <span class="day-date">@TisaWasteManagement.Helpers.WeeklyRecurrenceHelper.GetDisplayDate(schedule).ToString("dddd, dd MMM yyyy")</span>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">Not assigned</span>
+                                                    }
+                                                </td>
+                                                <td class="col-driver cell-truncate" title="@(schedule.Driver != null ? schedule.Driver.FirstName + " " + schedule.Driver.LastName : "N/A")">
+                                                    @if (schedule.Driver != null)
+                                                    {
+                                                        @(schedule.Driver.FirstName + " " + schedule.Driver.LastName)
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                </td>
+                                                <td class="col-truck">
+                                                    @if (schedule.GarbageTruck != null)
+                                                    {
+                                                        @(string.IsNullOrEmpty(schedule.GarbageTruck.PlateNumber) ? schedule.GarbageTruck.MVFileNumber : schedule.GarbageTruck.PlateNumber)
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">N/A</span>
+                                                    }
+                                                </td>
+                                                <td class="col-status">
+                                                    <span class="status-badge @(schedule.Status == "Completed" ? "status-completed" : "status-delayed")">
+                                                        @schedule.Status
+                                                    </span>
+                                                    @if (schedule.Status == "Completed" && schedule.DateOfCompletion.HasValue)
+                                                    {
+                                                        <div class="completion-detail">@schedule.DateOfCompletion.Value.ToString("MMM d, yyyy h:mm tt")</div>
+                                                    }
+                                                </td>
+                                                <td class="col-created">
+                                                    @if (schedule.CreatedDate.HasValue)
+                                                    {
+                                                        @schedule.CreatedDate.Value.ToString("MMM d, yyyy")
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
+                                                <td class="col-actions">
+                                                    <div class="action-group">
+                                                        <a asp-action="CollectionDetails"
+                                                           asp-route-id="@schedule.CollectionScheduleId"
+                                                           class="btn-action btn-view"
+                                                           title="View Details">
+                                                            <i class="bi bi-eye"></i> Details
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== COMPLAINT RECORDS TAB ===== -->
+        <div class="tab-pane fade" id="complaintRecords" role="tabpanel">
+            <div class="records-card">
+                <div class="records-card-body">
+
+                    <!-- Search and Filter -->
+                    <form method="get" class="search-filter-form">
+                        <div class="search-filter-grid">
+                            <div class="filter-item search-item">
+                                <div class="input-group">
+                                    <span class="input-group-icon"><i class="bi bi-search"></i></span>
+                                    <input type="text"
+                                           name="complaintSearch"
+                                           class="form-control search-input"
+                                           placeholder="Search resident, ticket, or type..."
+                                           value="@ViewBag.ComplaintSearch" />
+                                </div>
+                            </div>
+
+                            <div class="filter-item">
+                                <select name="complaintStatus" class="form-select filter-select">
+                                    <option value="">All Status</option>
+                                    <option value="Urgent" selected="@(ViewBag.ComplaintStatus == "Urgent")">Urgent</option>
+                                    <option value="Ongoing" selected="@(ViewBag.ComplaintStatus == "Ongoing")">Ongoing</option>
+                                    <option value="Accomplished" selected="@(ViewBag.ComplaintStatus == "Accomplished")">Accomplished</option>
+                                </select>
+                            </div>
+
+                            <div class="filter-item date-range-item">
+                                <div class="date-range-group">
+                                    <input type="date"
+                                           name="complaintStartDate"
+                                           class="form-control date-input"
+                                           value="@(ViewBag.ComplaintStartDate?.ToString("yyyy-MM-dd"))"
+                                           placeholder="From" />
+                                    <span class="date-separator">to</span>
+                                    <input type="date"
+                                           name="complaintEndDate"
+                                           class="form-control date-input"
+                                           value="@(ViewBag.ComplaintEndDate?.ToString("yyyy-MM-dd"))"
+                                           placeholder="To" />
+                                </div>
+                            </div>
+
+                            <div class="filter-item">
+                                <button type="submit" class="btn btn-filter">
+                                    <i class="bi bi-search"></i> Search
+                                </button>
+                            </div>
+
+                            <div class="filter-item">
+                                <a asp-action="Index" class="btn btn-clear">
+                                    <i class="bi bi-x-circle"></i> Clear
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Complaint Records Table -->
+                    @if (!Model.ComplaintRecords.Any())
+                    {
+                        <div class="empty-state">
+                            <i class="bi bi-inbox empty-icon"></i>
+                            <h4 class="empty-title">No complaint records found</h4>
+                            <p class="empty-description">Try adjusting your search or filter criteria.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="table records-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-ticket">Ticket Number</th>
+                                            <th class="col-resident">Resident Name</th>
+                                            <th class="col-type">Complaint Type</th>
+                                            <th class="col-status">Status</th>
+                                            <th class="col-date">Date Submitted</th>
+                                            <th class="col-actions">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var complaint in Model.ComplaintRecords)
+                                        {
+                                            <tr>
+                                                <td class="col-ticket">
+                                                    <span class="ticket-number">@complaint.TicketNumber</span>
+                                                </td>
+                                                <td class="col-resident">@complaint.ResidentName</td>
+                                                <td class="col-type">@complaint.ComplaintType</td>
+                                                <td class="col-status">
+                                                    <span class="status-badge @(complaint.Status == "Accomplished" ? "status-accomplished" : complaint.Status == "Ongoing" ? "status-ongoing" : complaint.Status == "Urgent" ? "status-urgent" : "status-pending")">
+                                                        @complaint.StatusDisplayName
+                                                    </span>
+                                                </td>
+                                                <td class="col-date">@complaint.FiledDate.ToString("MMM d, yyyy h:mm tt")</td>
+                                                <td class="col-actions">
+                                                    <div class="action-group">
+                                                        <a asp-action="ComplaintDetails"
+                                                           asp-route-id="@complaint.ComplaintId"
+                                                           class="btn-action btn-view"
+                                                           title="View Details">
+                                                            <i class="bi bi-eye"></i> Details
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function switchTab(tabId) {
+            var tab = document.getElementById(tabId);
+            if (tab) {
+                var tabInstance = new bootstrap.Tab(tab);
+                tabInstance.show();
+            }
+        }
+    </script>
+}

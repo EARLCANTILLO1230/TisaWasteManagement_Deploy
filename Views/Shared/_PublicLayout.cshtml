@@ -1,0 +1,300 @@
+﻿<!-- Views/Shared/_PublicLayout.cshtml -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Barangay Tisa Waste Management</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/css/HomeStyles.css"
+          asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- =========================================
+         RESPONSIVE PUBLIC NAVBAR
+    ========================================== -->
+
+    <header class="public-navbar">
+
+        <nav class="navbar navbar-expand-lg">
+
+            <div class="container">
+
+                <!-- BRAND -->
+                <a class="navbar-brand public-brand"
+                   asp-controller="Home"
+                   asp-action="Index">
+
+                    <img src="~/images/TISA_LOGO-removebg-preview.png"
+                         alt="Barangay Tisa Logo"
+                         class="nav-logo" />
+
+                    <div class="brand-text">
+                        <span class="brand-government">
+                            City of Cebu
+                        </span>
+
+                        <span class="brand-name">
+                            Barangay Tisa
+                        </span>
+
+                        <span class="brand-system">
+                            Waste Management
+                        </span>
+                    </div>
+
+                </a>
+
+
+                <!-- MOBILE TOGGLE -->
+                <button class="navbar-toggler public-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#publicNavbar"
+                        aria-controls="publicNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+
+                    <i class="bi bi-list"></i>
+
+                </button>
+
+
+                <!-- NAVIGATION -->
+                <div class="collapse navbar-collapse"
+                     id="publicNavbar">
+
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+
+                                <i class="bi bi-house"></i>
+                                Home
+
+                            </a>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="CollectionSchedule"
+                               asp-action="PublicIndex">
+
+                                <i class="bi bi-calendar3"></i>
+                                Collection Schedule
+
+                            </a>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Complaint"
+                               asp-action="Index">
+
+                                <i class="bi bi-exclamation-circle"></i>
+                                File Complaint
+
+                            </a>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Complaint"
+                               asp-action="Track">
+
+                                <i class="bi bi-search"></i>
+                                Track Complaint
+
+                            </a>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="About">
+
+                                <i class="bi bi-info-circle"></i>
+                                About
+
+                            </a>
+
+                        </li>
+
+
+                        <!-- STAFF LOGIN -->
+
+                        <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+
+                            <a class="btn-staff-login"
+                               asp-controller="Account"
+                               asp-action="Login">
+
+                                <i class="bi bi-shield-lock"></i>
+                                Staff Login
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =========================================
+         PAGE CONTENT - FLEX GROW
+    ========================================== -->
+
+    <main class="flex-grow-1">
+
+        @RenderBody()
+
+    </main>
+
+
+    <!-- =========================================
+         FOOTER - COMPACT, STAYS AT BOTTOM
+    ========================================== -->
+
+    <footer class="public-footer mt-auto">
+
+        <div class="container">
+
+            <div class="footer-grid">
+
+                <!-- About -->
+                <div>
+
+                    <div class="footer-brand">
+
+                        <img src="~/images/TISA_LOGO-removebg-preview.png"
+                             alt="Barangay Tisa Logo" />
+
+                        <div>
+                            <strong>Barangay Tisa</strong>
+                            <span>Waste Management System</span>
+                        </div>
+
+                    </div>
+
+                    <p class="footer-description">
+                        A web-based platform that helps residents access
+                        waste collection information, submit complaints,
+                        and stay informed about barangay updates.
+                    </p>
+
+                </div>
+
+
+                <!-- Quick Links -->
+                <div>
+
+                    <h5>Quick Links</h5>
+
+                    <a asp-controller="Home"
+                       asp-action="Index">
+                        Home
+                    </a>
+
+                    <a asp-controller="CollectionSchedule"
+                       asp-action="PublicIndex">
+                        Collection Schedule
+                    </a>
+
+                    <a asp-controller="Complaint"
+                       asp-action="Index">
+                        File Complaint
+                    </a>
+
+                    <a asp-controller="Complaint"
+                       asp-action="Track">
+                        Track Complaint
+                    </a>
+
+                </div>
+
+
+                <!-- Contact -->
+                <div>
+                    <h5>Barangay Tisa</h5>
+
+                    <p>
+                        <i class="bi bi-geo-alt"></i>
+                        Cebu City, Philippines
+                    </p>
+
+                    <p style="display: flex; align-items: center; gap: 6px;">
+                        <i class="bi bi-facebook" style="font-size: 1rem;"></i>
+                        <a href="https://www.facebook.com/p/Office-of-the-Tisa-Barangay-Captain-100094722830498/"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Facebook
+                        </a>
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="footer-bottom">
+
+                <span>
+                    &copy; @DateTime.Now.Year Barangay Tisa Waste Management System
+                </span>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- SCRIPTS -->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

@@ -1,0 +1,211 @@
+﻿@model IEnumerable<TisaWasteManagement.Models.CollectionSchedule>
+
+@{
+    ViewData["Title"] = "Collection Schedules";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/CollectionScheduleStyles.css" />
+}
+
+<div class="public-collection-page">
+    <div class="public-collection-container">
+
+        <!-- ===== PAGE HEADER ===== -->
+        <div class="collection-public-header">
+            <h1>
+                <i class="bi bi-calendar3"></i> Waste Collection Schedules
+            </h1>
+            <p>
+                View the scheduled waste collection days for each sitio in Barangay Tisa.
+                Stay informed and help keep our community clean.
+            </p>
+        </div>
+
+        <!-- ===== SEARCH & FILTERS ===== -->
+        <div class="public-search-container">
+            <form asp-action="PublicIndex" method="get">
+                <div class="public-search-grid">
+                    <!-- Search Input -->
+                    <div class="public-search-item">
+                        <div class="public-search-input-group">
+                            <span class="input-icon"><i class="bi bi-search"></i></span>
+                            <input type="text"
+                                   name="search"
+                                   value="@ViewBag.Search" />
+                        </div>
+                    </div>
+
+                    <!-- Day Filter -->
+                    <div class="public-filter-item">
+                        <select name="dayFilter" class="public-filter-select" onchange="this.form.submit()">
+                            <option value="" selected="@((string)ViewBag.DayFilter == null ? "selected" : null)">All Days</option>
+                            @foreach (var day in new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" })
+                            {
+                                <option value="@day" selected="@((string)ViewBag.DayFilter == day ? "selected" : null)">@day</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Clear Button -->
+                    @if (!string.IsNullOrEmpty((string)ViewBag.Search))
+                    {
+                        <div class="public-filter-item">
+                            <a asp-action="PublicIndex" class="public-btn-clear">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        </div>
+                    }
+
+                    <!-- Hidden submit button for enter key -->
+                    <button type="submit" style="display: none;"></button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ===== WEEK BANNER ===== -->
+        <div class="public-week-banner">
+            <i class="bi bi-calendar-week"></i>
+            <span>
+                Week of <strong>@(((DateTime)ViewBag.WeekStart).ToString("MMM d")) - @(((DateTime)ViewBag.WeekEnd).ToString("MMM d, yyyy"))</strong>
+                &nbsp;·&nbsp; <strong>@Model.Count()</strong> schedule(s) found
+            </span>
+        </div>
+
+        <!-- ===== TABLE ===== -->
+        @if (!Model.Any())
+        {
+            <div class="public-empty-state">
+                <i class="bi bi-calendar-x"></i>
+                <h4>No schedules found</h4>
+                <p>No collection schedules available for this week or search criteria.</p>
+            </div>
+        }
+        else
+        {
+            <div class="public-table-wrapper">
+                <div class="table-responsive">
+                    <table class="public-schedule-table">
+                        <thead>
+                            <tr>
+                                <th class="public-col-day">Day</th>
+                                <th class="public-col-status">Status</th>
+                                <th class="public-col-sitios">Sitio(s)</th>
+                                <th class="public-col-truck">Truck</th>
+                                <th class="public-col-dump text-center">Dump #</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var schedule in Model)
+                            {
+                                <tr>
+                                    <td class="public-col-day">
+                                        @if (schedule.DayOfWeek.HasValue)
+                                        {
+                                            var displayDate = TisaWasteManagement.Helpers.WeeklyRecurrenceHelper.GetDisplayDate(schedule);
+                                            <div class="public-day-info">
+                                                <span class="public-day-name">@schedule.DayOfWeek.Value.ToString()</span>
+                                                <span class="public-day-date">@displayDate.ToString("dddd, dd MMM yyyy")</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td class="public-col-status">
+                                        <span class="public-status-badge @(schedule.Status switch
+                                              {
+                                                  "Completed" => "public-status-completed",
+                                                  "Delayed" => "public-status-delayed",
+                                                  "Cancelled" => "public-status-cancelled",
+                                                  "In Progress" => "public-status-inprogress",
+                                                  _ => "public-status-pending"
+                                              })">
+                                    @schedule.Status
+                                </span>
+                            </td>
+                            <td class="public-col-sitios">
+                                @if (schedule.CollectionScheduleSitios != null && schedule.CollectionScheduleSitios.Any())
+                                        {
+                                            var sitioNames = schedule.CollectionScheduleSitios
+                                            .Select(cs => cs.Sitio?.SitioName)
+                                            .Where(n => !string.IsNullOrEmpty(n))
+                                            .ToList();
+                                            <span class="public-sitio-names">@string.Join(", ", sitioNames)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td class="public-col-truck">
+                                        @if (schedule.GarbageTruck != null)
+                                        {
+                                            <span class="public-truck-info">
+                                                @(string.IsNullOrEmpty(schedule.GarbageTruck.PlateNumber) ? schedule.GarbageTruck.MVFileNumber : schedule.GarbageTruck.PlateNumber)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td class="public-col-dump text-center">
+                                        <span class="public-dump-number">@schedule.DumpNumber</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!-- ===== PAGINATION ===== -->
+        @{
+            int currentPage = ViewBag.CurrentPage;
+            int totalPages = ViewBag.TotalPages;
+        }
+        @if (totalPages > 1)
+        {
+            <nav class="public-pagination" aria-label="Schedule pages">
+                <ul class="public-pagination-list">
+                    <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                        <a class="page-link"
+                           asp-action="PublicIndex"
+                           asp-route-page="@(currentPage - 1)"
+                           asp-route-search="@ViewBag.Search"
+                           asp-route-dayFilter="@ViewBag.DayFilter">
+                            <i class="bi bi-chevron-left"></i> Previous
+                        </a>
+                    </li>
+                    <li class="page-item active">
+                        <span class="page-link">@currentPage <span class="public-page-total">of @totalPages</span></span>
+                    </li>
+                    <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                        <a class="page-link"
+                           asp-action="PublicIndex"
+                           asp-route-page="@(currentPage + 1)"
+                           asp-route-search="@ViewBag.Search"
+                           asp-route-dayFilter="@ViewBag.DayFilter">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        }
+
+        <!-- ===== FOOTER NOTE ===== -->
+        <div class="public-collection-footer">
+            <i class="bi bi-info-circle"></i>
+            <p>
+                For concerns about waste collection or to report issues,
+                please contact the <strong>Barangay Tisa Waste Management Office</strong>
+                or <a asp-controller="Complaint" asp-action="Index">submit a complaint</a>.
+            </p>
+        </div>
+
+    </div>
+</div>
