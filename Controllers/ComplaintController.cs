@@ -53,10 +53,8 @@ namespace TisaWasteManagement.Controllers
             // Load the list of active sitios for the dropdown
             LoadSitioDropdown();
 
-            // BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
-            // Pass the reCAPTCHA site key to the view
-            // ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
-            // END: reCAPTCHA DISABLED FOR OFFLINE DEMO
+            // ✅ Pass the reCAPTCHA site key to the view
+            ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
 
             return View();
         }
@@ -73,23 +71,19 @@ namespace TisaWasteManagement.Controllers
             // Reload dropdown in case we need to redisplay the form with errors
             LoadSitioDropdown();
 
-             //BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
-             //Pass the reCAPTCHA site key to the view (needed when returning the view)
-             //ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
-             //END: reCAPTCHA DISABLED FOR OFFLINE DEMO
+            // ✅ Pass the reCAPTCHA site key to the view (needed when returning the view)
+            ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
 
-             //BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
-             //Step 5: Verify CAPTCHA - Check before ModelState validation
-             //var recaptchaResponse = Request.Form["g-recaptcha-response"];
-             //if (!await VerifyRecaptcha(recaptchaResponse))
-             //{
-             //    ModelState.AddModelError(string.Empty, "Please complete the CAPTCHA verification.");
-             //    TempData["Error"] = "Please complete the CAPTCHA verification.";
-             //    return View(complaint);
-             //}
-             //END: reCAPTCHA DISABLED FOR OFFLINE DEMO
+            // ✅ Verify CAPTCHA - Check before ModelState validation
+            var recaptchaResponse = Request.Form["g-recaptcha-response"];
+            if (!await VerifyRecaptcha(recaptchaResponse))
+            {
+                ModelState.AddModelError(string.Empty, "Please complete the CAPTCHA verification.");
+                TempData["Error"] = "Please complete the CAPTCHA verification.";
+                return View(complaint);
+            }
 
-             //Check if all required fields are filled
+            // Check if all required fields are filled
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Please complete all required fields.";
@@ -230,7 +224,6 @@ namespace TisaWasteManagement.Controllers
         /// <summary>
         /// Verifies the reCAPTCHA response with Google's API.
         /// </summary>
-        // BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
         private async Task<bool> VerifyRecaptcha(string recaptchaResponse)
         {
             if (string.IsNullOrEmpty(recaptchaResponse))
@@ -244,9 +237,9 @@ namespace TisaWasteManagement.Controllers
             {
                 var content = new FormUrlEncodedContent(new[]
                 {
-                     new KeyValuePair<string, string>("secret", secretKey),
-                     new KeyValuePair<string, string>("response", recaptchaResponse)
-                 });
+                    new KeyValuePair<string, string>("secret", secretKey),
+                    new KeyValuePair<string, string>("response", recaptchaResponse)
+                });
 
                 var response = await _httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
 
@@ -281,7 +274,6 @@ namespace TisaWasteManagement.Controllers
                 return false;
             }
         }
-        // END: reCAPTCHA DISABLED FOR OFFLINE DEMO
 
         /// <summary>
         /// Generates a unique ticket number.

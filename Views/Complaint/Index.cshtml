@@ -132,6 +132,12 @@
                     </div>
                 </div>
 
+                <!-- ===== ✅ CAPTCHA ===== -->
+                <div class="complaint-form-group">
+                    <div class="g-recaptcha" data-sitekey="@ViewBag.RecaptchaSiteKey"></div>
+                    <span asp-validation-summary="ModelOnly" class="text-danger"></span>
+                </div>
+
                 <!-- ===== FORM ACTIONS ===== -->
                 <div class="complaint-form-actions">
                     <button type="submit" class="btn btn-submit">
@@ -155,6 +161,9 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <!-- ✅ Google reCAPTCHA Script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
         const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
