@@ -26,4 +26,16 @@
     <Folder Include="wwwroot\images\complaints\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Models\ReportViewModel.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="waste_management.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
