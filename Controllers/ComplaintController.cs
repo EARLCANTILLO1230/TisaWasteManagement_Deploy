@@ -74,7 +74,7 @@ namespace TisaWasteManagement.Controllers
             // Pass the reCAPTCHA site key to the view (needed when returning the view)
             ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
 
-            // ✅ Verify CAPTCHA v3 - Check before ModelState validation
+            // ✅ Verify CAPTCHA v2 - Check before ModelState validation
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
             if (!await VerifyRecaptcha(recaptchaResponse))
             {
@@ -217,7 +217,7 @@ namespace TisaWasteManagement.Controllers
         }
 
         /// <summary>
-        /// Verifies the reCAPTCHA v3 response with Google's API.
+        /// Verifies the reCAPTCHA v2 response with Google's API.
         /// </summary>
         private async Task<bool> VerifyRecaptcha(string recaptchaResponse)
         {
@@ -245,19 +245,10 @@ namespace TisaWasteManagement.Controllers
                 using var document = JsonDocument.Parse(jsonResponse);
                 JsonElement root = document.RootElement;
 
-                // Check if the verification was successful
+                // For v2, just check success (no score check)
                 if (root.TryGetProperty("success", out JsonElement successElement))
                 {
-                    bool success = successElement.GetBoolean();
-
-                    // For v3, check the score (threshold 0.5)
-                    if (root.TryGetProperty("score", out JsonElement scoreElement))
-                    {
-                        float score = scoreElement.GetSingle();
-                        return success && score >= 0.5;
-                    }
-
-                    return success;
+                    return successElement.GetBoolean();
                 }
 
                 return false;

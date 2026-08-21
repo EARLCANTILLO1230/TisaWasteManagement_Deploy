@@ -132,8 +132,11 @@
                     </div>
                 </div>
 
-                <!-- ===== ✅ reCAPTCHA v3 - Hidden input for token ===== -->
-                <input type="hidden" id="recaptchaResponse" name="g-recaptcha-response" />
+                <!-- ===== ✅ reCAPTCHA v2 - Visible Checkbox ===== -->
+                <div class="complaint-form-group">
+                    <div class="g-recaptcha" data-sitekey="@ViewBag.RecaptchaSiteKey"></div>
+                    <span asp-validation-summary="ModelOnly" class="text-danger"></span>
+                </div>
 
                 <!-- ===== FORM ACTIONS ===== -->
                 <div class="complaint-form-actions">
@@ -159,8 +162,8 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <!-- ✅ Google reCAPTCHA v3 Script -->
-    <script src="https://www.google.com/recaptcha/api.js?render=@ViewBag.RecaptchaSiteKey" async defer></script>
+    <!-- ✅ Google reCAPTCHA v2 Script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
     <script>
         const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
@@ -221,26 +224,6 @@
             } else {
                 label.textContent = 'Choose an image';
             }
-        });
-
-        // ===== ✅ reCAPTCHA v3 Form Handling =====
-        document.getElementById('complaintForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Verifying...';
-
-            const siteKey = '@ViewBag.RecaptchaSiteKey';
-
-            grecaptcha.execute(siteKey, { action: 'submit' }).then(function(token) {
-                document.getElementById('recaptchaResponse').value = token;
-                document.getElementById('complaintForm').submit();
-            }).catch(function() {
-                alert('CAPTCHA verification failed. Please try again.');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-send"></i> Submit Complaint';
-            });
         });
     </script>
 }
