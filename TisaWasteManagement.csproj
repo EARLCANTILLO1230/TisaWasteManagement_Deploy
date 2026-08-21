@@ -33,28 +33,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\images\bulletinboard\1aa23e07-cb97-477c-b57b-8f66545b6b25.jpg">
+    <Content Update="wwwroot\images\bulletinboard\guide1.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\images\bulletinboard\585d1078-fc69-4602-b821-ec7aadb567e3.jpg">
+    <Content Update="wwwroot\images\bulletinboard\guide2.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\images\bulletinboard\cef9572a-7a1b-407a-abaa-19533e4a1f00.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\images\bulletinboard\e2e3aec6-9dc8-45c1-8437-c301caaedbb1.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\images\bulletinboard\edc1dbed-2b36-4db1-9b7c-6d811873de2f.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\images\bulletinboard\ef8d6fce-9af8-4089-9304-d765f7e02e4a.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\images\bulletinboard\f44a3514-b4af-49b4-91e4-1087eaee6789.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\images\bulletinboard\f77bee59-933c-4acc-b2e8-96cf822ac4fe.jpg">
+    <Content Update="wwwroot\images\bulletinboard\poster1.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
