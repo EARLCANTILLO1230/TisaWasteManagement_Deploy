@@ -53,7 +53,7 @@ namespace TisaWasteManagement.Controllers
             // Load the list of active sitios for the dropdown
             LoadSitioDropdown();
 
-            // ✅ Pass the reCAPTCHA site key to the view
+            // Pass the reCAPTCHA site key to the view
             ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
 
             return View();
@@ -65,16 +65,16 @@ namespace TisaWasteManagement.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RequestSizeLimit(6 * 1024 * 1024)] // Allow a little headroom over the 5MB image limit for the rest of the form
+        [RequestSizeLimit(6 * 1024 * 1024)]
         public async Task<IActionResult> Index([Bind("ResidentName,ContactNumber,SitioId,ComplaintType,Details")] Complaint complaint, IFormFile? ImageFile)
         {
             // Reload dropdown in case we need to redisplay the form with errors
             LoadSitioDropdown();
 
-            // ✅ Pass the reCAPTCHA site key to the view (needed when returning the view)
+            // Pass the reCAPTCHA site key to the view (needed when returning the view)
             ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
 
-            // ✅ Verify CAPTCHA - Check before ModelState validation
+            // ✅ Verify CAPTCHA v3 - Check before ModelState validation
             var recaptchaResponse = Request.Form["g-recaptcha-response"];
             if (!await VerifyRecaptcha(recaptchaResponse))
             {
@@ -113,10 +113,6 @@ namespace TisaWasteManagement.Controllers
             }
 
             // Handle the (now required) image upload.
-            // Instead of storing the picture's bytes in the database, we save the
-            // picture as a file inside wwwroot/images/complaints and only store
-            // the generated file name on the Complaint record - same approach as
-            // the Announcement and BulletinBoardImage modules.
             if (ImageFile != null && ImageFile.Length > 0)
             {
                 string extension = Path.GetExtension(ImageFile.FileName).ToLowerInvariant();
@@ -139,7 +135,6 @@ namespace TisaWasteManagement.Controllers
             }
 
             // Generate a unique ticket number
-            // Format: TISA-YYYYMMDD-XXXX (e.g., TISA-20260718-0001)
             complaint.TicketNumber = await GenerateTicketNumberAsync();
 
             // Set default status to "Awaiting Review" for new complaints
@@ -183,7 +178,7 @@ namespace TisaWasteManagement.Controllers
 
             // Search for the complaint with the given ticket number
             var complaint = await _context.Complaint
-                .Include(c => c.Sitio)  // Include Sitio details
+                .Include(c => c.Sitio)
                 .FirstOrDefaultAsync(c => c.TicketNumber == ticketNumber);
 
             if (complaint == null)
@@ -222,7 +217,7 @@ namespace TisaWasteManagement.Controllers
         }
 
         /// <summary>
-        /// Verifies the reCAPTCHA response with Google's API.
+        /// Verifies the reCAPTCHA v3 response with Google's API.
         /// </summary>
         private async Task<bool> VerifyRecaptcha(string recaptchaResponse)
         {
@@ -255,11 +250,10 @@ namespace TisaWasteManagement.Controllers
                 {
                     bool success = successElement.GetBoolean();
 
-                    // Optional: Check the score (for reCAPTCHA v3)
+                    // For v3, check the score (threshold 0.5)
                     if (root.TryGetProperty("score", out JsonElement scoreElement))
                     {
                         float score = scoreElement.GetSingle();
-                        // You can set a threshold, e.g., score >= 0.5
                         return success && score >= 0.5;
                     }
 
@@ -291,7 +285,7 @@ namespace TisaWasteManagement.Controllers
 
             // Increment by 1 and format as 4-digit with leading zeros
             int sequenceNumber = todayCount + 1;
-            string sequencePart = sequenceNumber.ToString("D4"); // D4 = 4 digits with leading zeros
+            string sequencePart = sequenceNumber.ToString("D4");
 
             return $"{prefix}-{datePart}-{sequencePart}";
         }
@@ -299,8 +293,6 @@ namespace TisaWasteManagement.Controllers
         /// <summary>
         /// Saves an uploaded complaint photo into wwwroot/images/complaints with a
         /// unique file name, and returns just that file name (not the full path).
-        /// This is the same pattern used by AnnouncementController and
-        /// BulletinBoardController for saving their pictures.
         /// </summary>
         private async Task<string> SaveImageAsync(IFormFile imageFile, string extension)
         {
@@ -311,8 +303,6 @@ namespace TisaWasteManagement.Controllers
             Directory.CreateDirectory(folderPath);
 
             // A new Guid as the file name means two uploads can never collide,
-            // even if two residents upload files that both happen to be named
-            // "photo.jpg". We keep the original extension (.jpg, .png, etc.).
             string uniqueFileName = Guid.NewGuid().ToString() + extension;
             string fullPath = Path.Combine(folderPath, uniqueFileName);
 
