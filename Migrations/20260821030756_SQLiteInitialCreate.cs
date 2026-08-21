@@ -6,37 +6,21 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TisaWasteManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class initialcreate : Migration
+    public partial class SQLiteInitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AdminAccount",
-                columns: table => new
-                {
-                    AdminAccountId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AdminAccount", x => x.AdminAccountId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Announcement",
                 columns: table => new
                 {
-                    AnnouncementId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DatePosted = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    AnnouncementId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Title = table.Column<string>(type: "TEXT", maxLength: 150, nullable: false),
+                    Content = table.Column<string>(type: "TEXT", nullable: false),
+                    ImageFileName = table.Column<string>(type: "TEXT", nullable: true),
+                    DatePosted = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -47,11 +31,11 @@ namespace TisaWasteManagement.Migrations
                 name: "BulletinBoardImage",
                 columns: table => new
                 {
-                    BulletinBoardImageId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ImageFileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Caption = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
-                    DateUploaded = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    BulletinBoardImageId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ImageFileName = table.Column<string>(type: "TEXT", nullable: false),
+                    Caption = table.Column<string>(type: "TEXT", maxLength: 150, nullable: true),
+                    DateUploaded = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,14 +46,14 @@ namespace TisaWasteManagement.Migrations
                 name: "Collector",
                 columns: table => new
                 {
-                    CollectorId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ContactNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    DaysOff = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Role = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    CollectorId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FirstName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    ContactNumber = table.Column<string>(type: "TEXT", maxLength: 11, nullable: false),
+                    Address = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    DaysOff = table.Column<string>(type: "TEXT", nullable: true),
+                    Role = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,11 +64,11 @@ namespace TisaWasteManagement.Migrations
                 name: "GarbageTruck",
                 columns: table => new
                 {
-                    TruckId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PlateNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    MVFileNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    StatusFlag = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    TruckId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PlateNumber = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
+                    MVFileNumber = table.Column<string>(type: "TEXT", maxLength: 15, nullable: true),
+                    StatusFlag = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -95,12 +79,12 @@ namespace TisaWasteManagement.Migrations
                 name: "InspectorAccount",
                 columns: table => new
                 {
-                    InspectorAccountId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    InspectorAccountId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Username = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -111,16 +95,16 @@ namespace TisaWasteManagement.Migrations
                 name: "ReportFile",
                 columns: table => new
                 {
-                    ReportFileId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    FileType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileSize = table.Column<long>(type: "bigint", nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UploadedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UploadDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ReportFileId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FileName = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    FileType = table.Column<string>(type: "TEXT", nullable: false),
+                    FileSize = table.Column<long>(type: "INTEGER", nullable: false),
+                    Category = table.Column<string>(type: "TEXT", nullable: false),
+                    UploadedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    UploadDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    FilePath = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -131,9 +115,9 @@ namespace TisaWasteManagement.Migrations
                 name: "Sitio",
                 columns: table => new
                 {
-                    SitioId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SitioName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    SitioId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    SitioName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -141,42 +125,42 @@ namespace TisaWasteManagement.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SmsLogs",
+                name: "SmsLog",
                 columns: table => new
                 {
-                    SmsLogId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RecipientNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
-                    Message = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    NotificationType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ReferenceId = table.Column<int>(type: "int", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    SentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Response = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    SentBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    SmsLogId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    RecipientNumber = table.Column<string>(type: "TEXT", maxLength: 11, nullable: false),
+                    Message = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    NotificationType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    ReferenceId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    SentDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Response = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    SentBy = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SmsLogs", x => x.SmsLogId);
+                    table.PrimaryKey("PK_SmsLog", x => x.SmsLogId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "CollectionSchedule",
                 columns: table => new
                 {
-                    CollectionScheduleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DayOfWeek = table.Column<int>(type: "int", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DumpNumber = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DateOfCompletion = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RepeatWeekly = table.Column<bool>(type: "bit", nullable: false),
-                    ParentScheduleId = table.Column<int>(type: "int", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    DriverId = table.Column<int>(type: "int", nullable: true),
-                    TruckId = table.Column<int>(type: "int", nullable: true)
+                    CollectionScheduleId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    DayOfWeek = table.Column<int>(type: "INTEGER", nullable: true),
+                    Status = table.Column<string>(type: "TEXT", nullable: false),
+                    DumpNumber = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DateOfCompletion = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    RepeatWeekly = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ParentScheduleId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Note = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    DriverId = table.Column<int>(type: "INTEGER", nullable: true),
+                    TruckId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -205,18 +189,18 @@ namespace TisaWasteManagement.Migrations
                 name: "Complaint",
                 columns: table => new
                 {
-                    ComplaintId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ResidentName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ContactNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
-                    SitioId = table.Column<int>(type: "int", nullable: false),
-                    ComplaintType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Details = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    TicketNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false, defaultValue: "Awaiting Review"),
-                    FiledDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ImageFileName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true)
+                    ComplaintId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ResidentName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    ContactNumber = table.Column<string>(type: "TEXT", maxLength: 11, nullable: false),
+                    SitioId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ComplaintType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Details = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: false),
+                    TicketNumber = table.Column<string>(type: "TEXT", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false, defaultValue: "Awaiting Review"),
+                    FiledDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    ImageFileName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -233,15 +217,15 @@ namespace TisaWasteManagement.Migrations
                 name: "CollectionMonitoring",
                 columns: table => new
                 {
-                    CollectionMonitoringId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CollectionScheduleId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Remarks = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    SitioNames = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ReasonForDelay = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    LogDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CollectionMonitoringId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CollectionScheduleId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    Remarks = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    SitioNames = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    ReasonForDelay = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    Notes = table.Column<string>(type: "TEXT", maxLength: 1000, nullable: true),
+                    LogDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -258,10 +242,10 @@ namespace TisaWasteManagement.Migrations
                 name: "CollectionScheduleCollector",
                 columns: table => new
                 {
-                    CollectionScheduleCollectorId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CollectionScheduleId = table.Column<int>(type: "int", nullable: false),
-                    CollectorId = table.Column<int>(type: "int", nullable: false)
+                    CollectionScheduleCollectorId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CollectionScheduleId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CollectorId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -284,13 +268,13 @@ namespace TisaWasteManagement.Migrations
                 name: "CollectionScheduleSitio",
                 columns: table => new
                 {
-                    CollectionScheduleSitioId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CollectionScheduleId = table.Column<int>(type: "int", nullable: false),
-                    SitioId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    ReasonForDelay = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    ReassignedToScheduleId = table.Column<int>(type: "int", nullable: true)
+                    CollectionScheduleSitioId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CollectionScheduleId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SitioId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    ReasonForDelay = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    ReassignedToScheduleId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -308,12 +292,6 @@ namespace TisaWasteManagement.Migrations
                         principalColumn: "SitioId",
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AdminAccount_Username",
-                table: "AdminAccount",
-                column: "Username",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CollectionMonitoring_CollectionScheduleId",
@@ -378,29 +356,34 @@ namespace TisaWasteManagement.Migrations
                 name: "IX_GarbageTruck_MVFileNumber",
                 table: "GarbageTruck",
                 column: "MVFileNumber",
-                unique: true,
-                filter: "[MVFileNumber] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_GarbageTruck_PlateNumber",
                 table: "GarbageTruck",
                 column: "PlateNumber",
-                unique: true,
-                filter: "[PlateNumber] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_InspectorAccount_Username",
                 table: "InspectorAccount",
                 column: "Username",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SmsLog_SentDate",
+                table: "SmsLog",
+                column: "SentDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SmsLog_Status",
+                table: "SmsLog",
+                column: "Status");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AdminAccount");
-
             migrationBuilder.DropTable(
                 name: "Announcement");
 
@@ -426,7 +409,7 @@ namespace TisaWasteManagement.Migrations
                 name: "ReportFile");
 
             migrationBuilder.DropTable(
-                name: "SmsLogs");
+                name: "SmsLog");
 
             migrationBuilder.DropTable(
                 name: "CollectionSchedule");

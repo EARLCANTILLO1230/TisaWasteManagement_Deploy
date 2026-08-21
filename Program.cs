@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add Database Context Service
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite("Data Source=waste_management.db"));
 
 // ===== STEP 1: Enable Session =====
 builder.Services.AddDistributedMemoryCache();
@@ -67,23 +67,23 @@ app.MapControllerRoute(
 // SQL script or a one-off console tool.
 //
 // IMPORTANT: change this password after your first login in a real deployment.
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//using (var scope = app.Services.CreateScope())
+//{
+//    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    if (!context.AdminAccount.Any())
-    {
-        var seedHasher = new PasswordHasher<AdminAccount>();
-        var defaultAdmin = new AdminAccount
-        {
-            Username = "admin",
-            CreatedDate = DateTime.Now
-        };
-        defaultAdmin.PasswordHash = seedHasher.HashPassword(defaultAdmin, "Admin123!");
+//    if (!context.AdminAccount.Any())
+//    {
+//        var seedHasher = new PasswordHasher<AdminAccount>();
+//        var defaultAdmin = new AdminAccount
+//        {
+//            Username = "admin",
+//            CreatedDate = DateTime.Now
+//        };
+//        defaultAdmin.PasswordHash = seedHasher.HashPassword(defaultAdmin, "Admin123!");
 
-        context.AdminAccount.Add(defaultAdmin);
-        context.SaveChanges();
-    }
-}
+//        context.AdminAccount.Add(defaultAdmin);
+//        context.SaveChanges();
+//    }
+//}
 
 app.Run();
