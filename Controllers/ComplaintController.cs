@@ -73,23 +73,23 @@ namespace TisaWasteManagement.Controllers
             // Reload dropdown in case we need to redisplay the form with errors
             LoadSitioDropdown();
 
-            // BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
-            // Pass the reCAPTCHA site key to the view (needed when returning the view)
-            // ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
-            // END: reCAPTCHA DISABLED FOR OFFLINE DEMO
+             //BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
+             //Pass the reCAPTCHA site key to the view (needed when returning the view)
+             //ViewBag.RecaptchaSiteKey = _configuration["Recaptcha:SiteKey"];
+             //END: reCAPTCHA DISABLED FOR OFFLINE DEMO
 
-            // BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
-            // Step 5: Verify CAPTCHA - Check before ModelState validation
-            // var recaptchaResponse = Request.Form["g-recaptcha-response"];
-            // if (!await VerifyRecaptcha(recaptchaResponse))
-            // {
-            //     ModelState.AddModelError(string.Empty, "Please complete the CAPTCHA verification.");
-            //     TempData["Error"] = "Please complete the CAPTCHA verification.";
-            //     return View(complaint);
-            // }
-            // END: reCAPTCHA DISABLED FOR OFFLINE DEMO
+             //BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
+             //Step 5: Verify CAPTCHA - Check before ModelState validation
+             //var recaptchaResponse = Request.Form["g-recaptcha-response"];
+             //if (!await VerifyRecaptcha(recaptchaResponse))
+             //{
+             //    ModelState.AddModelError(string.Empty, "Please complete the CAPTCHA verification.");
+             //    TempData["Error"] = "Please complete the CAPTCHA verification.";
+             //    return View(complaint);
+             //}
+             //END: reCAPTCHA DISABLED FOR OFFLINE DEMO
 
-            // Check if all required fields are filled
+             //Check if all required fields are filled
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Please complete all required fields.";
@@ -231,56 +231,56 @@ namespace TisaWasteManagement.Controllers
         /// Verifies the reCAPTCHA response with Google's API.
         /// </summary>
         // BEGIN: reCAPTCHA DISABLED FOR OFFLINE DEMO
-        // private async Task<bool> VerifyRecaptcha(string recaptchaResponse)
-        // {
-        //     if (string.IsNullOrEmpty(recaptchaResponse))
-        //         return false;
-        //
-        //     string secretKey = _configuration["Recaptcha:SecretKey"];
-        //     if (string.IsNullOrEmpty(secretKey))
-        //         return false;
-        //
-        //     try
-        //     {
-        //         var content = new FormUrlEncodedContent(new[]
-        //         {
-        //             new KeyValuePair<string, string>("secret", secretKey),
-        //             new KeyValuePair<string, string>("response", recaptchaResponse)
-        //         });
-        //
-        //         var response = await _httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
-        //
-        //         if (!response.IsSuccessStatusCode)
-        //             return false;
-        //
-        //         string jsonResponse = await response.Content.ReadAsStringAsync();
-        //         using var document = JsonDocument.Parse(jsonResponse);
-        //         JsonElement root = document.RootElement;
-        //
-        //         // Check if the verification was successful
-        //         if (root.TryGetProperty("success", out JsonElement successElement))
-        //         {
-        //             bool success = successElement.GetBoolean();
-        //
-        //             // Optional: Check the score (for reCAPTCHA v3)
-        //             if (root.TryGetProperty("score", out JsonElement scoreElement))
-        //             {
-        //                 float score = scoreElement.GetSingle();
-        //                 // You can set a threshold, e.g., score >= 0.5
-        //                 return success && score >= 0.5;
-        //             }
-        //
-        //             return success;
-        //         }
-        //
-        //         return false;
-        //     }
-        //     catch
-        //     {
-        //         // Log the exception if you have logging set up
-        //         return false;
-        //     }
-        // }
+        private async Task<bool> VerifyRecaptcha(string recaptchaResponse)
+        {
+            if (string.IsNullOrEmpty(recaptchaResponse))
+                return false;
+
+            string secretKey = _configuration["Recaptcha:SecretKey"];
+            if (string.IsNullOrEmpty(secretKey))
+                return false;
+
+            try
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                     new KeyValuePair<string, string>("secret", secretKey),
+                     new KeyValuePair<string, string>("response", recaptchaResponse)
+                 });
+
+                var response = await _httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify", content);
+
+                if (!response.IsSuccessStatusCode)
+                    return false;
+
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+                using var document = JsonDocument.Parse(jsonResponse);
+                JsonElement root = document.RootElement;
+
+                // Check if the verification was successful
+                if (root.TryGetProperty("success", out JsonElement successElement))
+                {
+                    bool success = successElement.GetBoolean();
+
+                    // Optional: Check the score (for reCAPTCHA v3)
+                    if (root.TryGetProperty("score", out JsonElement scoreElement))
+                    {
+                        float score = scoreElement.GetSingle();
+                        // You can set a threshold, e.g., score >= 0.5
+                        return success && score >= 0.5;
+                    }
+
+                    return success;
+                }
+
+                return false;
+            }
+            catch
+            {
+                // Log the exception if you have logging set up
+                return false;
+            }
+        }
         // END: reCAPTCHA DISABLED FOR OFFLINE DEMO
 
         /// <summary>
